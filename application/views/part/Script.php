@@ -10,7 +10,13 @@ $(function () {
             Obj.data += '&csrf_token='+parts.pop().split(";").shift();
         }
     });
-
+    $('#example1').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : false,
+      'ordering'    : false,
+      'autoWidth'   : true
+    });
     $('#login').click(function () {
     	$('#login-modal').modal('show');
     });
@@ -30,7 +36,7 @@ $(function () {
       var confirmed = '';
       confirmed = $('#confirmed').val();
       // alert(confirmed);
-      PopulatePost();
+      // PopulatePost('');
       if(confirmed != ''){
         Swal.fire({
             type: 'success',
@@ -41,6 +47,20 @@ $(function () {
             $('#login-modal').modal('show');
           });
       }
+      // pagination
+
+      $('#pagination').on('click','a',function(e){
+         e.preventDefault(); 
+         var pageno = $(this).attr('data-ci-pagination-page');
+         loadPagination(pageno,'');
+       });
+
+      loadPagination(0,'');
+
+
+      
+
+       
     });
 
     $('#goReg').submit(function (e) {
@@ -129,7 +149,6 @@ $(function () {
                     "</div>"+
                   "</div>"
                 );
-
               
             });
           }
@@ -145,14 +164,15 @@ $(function () {
           if(response.success == true){
             $.each(response.data,function (k,v) {
               $('#tumbnail-post').append(""+
-                  "<a href='#' class='simpleLens-thumbnail-wrapper'" +
-                    "data-lens-image='"+resizeImage(v.image,900,1024)+"'" +
-                    "data-big-image='"+resizeImage(v.image,250,300)+"'>"+
-                      "<div class='image size-fixed-mini scale-fit' style='background-image: url("+v.image+");'>"+
-                        "<img src='"+v.image+"' width='45' height='55'>"+
-                      "</div>"+
+                  "<a href='#' class='simpleLens-thumbnail-wrapper' " +
+                    "data-lens-image='"+resizeImage(v.image,900,1024)+"' " +
+                    "data-big-image='"+resizeImage(v.image,250,300)+"'> "+
+                      "<div class='image size-fixed-mini scale-fit' style='background-image: url("+v.image+");'> "+
+                        "<img src='"+resizeImage(v.image,45,55)+"'> "+
+                      "</div> "+
                   "</a>"
                 );
+              // console.log(resizeImage(v.image,45,55));
             });
           }
         }
@@ -254,6 +274,23 @@ $(function () {
           });
         }
       });
+
+      $('#SortPost').change(function () {
+        // alert($('#SortPost').val());
+        // 
+        $('ul.aa-product-catg').empty();
+        // PopulatePost($('#SortPost').val());
+        loadPagination(0,$('#SortPost').val())
+      });
+
+      // scrolling
+      $(window).scroll(function () {
+        if($(window).scrollTop() + $(window).height() >= $(document).height()){
+          var LastId = $('.post-id:last').attr('id');
+          // alert(LastId)
+          // PopulatePost_v2(LastId);
+        }
+      });
 });
     function sendmail(email){
       var _email = email;
@@ -270,9 +307,76 @@ $(function () {
         }
       });
     }
-    function PopulatePost() {
+    function loadPagination(pagno,sort){
+         $.ajax({
+           url: "<?=base_url()?>SitePostController/loadRecord/"+pagno+"/"+sort,
+           type: 'get',
+           dataType: 'json',
+           success: function(response){
+              $('#pagination').html(response.pagination);
+              createTable(response.result,response.row);
+           }
+         });
+       }
+    function createTable(result,sno){
+         sno = Number(sno);
+         $('ul.aa-product-catg').empty();
+         for(index in result){
+            // var id = result[index].id;
+            // var title = result[index].title;
+            // var content = result[index].slug;
+            // content = content.substr(0, 60) + " ...";
+            // var link = result[index].slug;
+            sno+=1;
+   
+            // var tr = "<tr>";
+            // tr += "<td>"+ sno +"</td>";
+            // tr += "<td><a href='"+ link +"' target='_blank' >"+ title +"</a></td>";
+            // tr += "</tr>";
+            // $('#postsList tbody').append(tr);
+            // alert(formatNumber(result[index].price - ((result[index].DISC/100)*result[index].price)));
+            var badge = '';
+            var afterdisc = '';
+            var normal ='';
+            if (result[index].promomember == 1) {
+              badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(result[index].DISC,1)+" %)</span>";
+              // alert(CekDiscount());
+              afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(result[index].price - ((result[index].DISC/100)*result[index].price))+"</span>";
+              normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(result[index].price)+"</del></span>";
+            }
+            else{
+              badge = '';
+              afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(result[index].price)+"</span>";
+              normal = "<span class='aa-product-price'><del></del></span>";
+            }
+            $('ul.aa-product-catg').append(""+
+              "<div class = 'post-id' id = '"+result[index].id+"'>"+
+              "<li>" +
+                "<figure>" +
+                  "<a class='aa-product-img' href='#'>"+
+                    "<div class='image size-fixed scale-fit' style='background-image: url("+result[index].imagemain+");'>"+
+                      "<img src='"+result[index].imagemain+"' alt='"+result[index].tittle+"' width='400' height='400'>"+
+                    "</div>"+
+                  "</a>" +
+                  "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
+                  "<figcaption>" +
+                    "<h4 class='aa-product-title'><a href='#'>"+result[index].tittle+"</a></h4>" +
+                    afterdisc+"" +normal+
+                    "<p class='aa-product-descrip'>"+result[index].description+"</p>"+
+                  "</figcaption>"+
+                "</figure>" +
+                // "<div class='aa-product-hvr-content'>" +
+                //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
+                // "</div>"+
+                badge +
+              "</li> </div>"
+              );
+
+          }
+        }
+    function PopulatePost(sort) {
       // $('ul.aa-product-catg').append('<li>An element</li>');
-      var order = '';
+      var order = sort;
       $.ajax({
         type: "post",
         url: "<?=base_url()?>SitePostController/GetPost",
@@ -280,8 +384,23 @@ $(function () {
         dataType: "json",
         success: function (response) {
           if(response.success == true){
+            var badge = '';
+            var afterdisc = '';
+            var normal ='';
             $.each(response.data,function (k,v) {
+              if (v.promomember == 1) {
+                badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(v.DISC,1)+" %)</span>";
+                // alert(CekDiscount());
+                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price - ((v.DISC/100)*v.price))+"</span>";
+                normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(v.price)+"</del></span>";
+              }
+              else{
+                badge = '';
+                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price)+"</span>";
+                normal = "<span class='aa-product-price'><del></del></span>";
+              }
               $('ul.aa-product-catg').append(""+
+                "<div class = 'post-id' id = '"+v.id+"'>"+
                 "<li>" +
                   "<figure>" +
                     "<a class='aa-product-img' href='#'>"+
@@ -292,19 +411,96 @@ $(function () {
                     "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
                     "<figcaption>" +
                       "<h4 class='aa-product-title'><a href='#'>"+v.tittle+"</a></h4>" +
-                      "<span class='aa-product-price'>Rp. "+formatNumber(v.price)+"</span><span class='aa-product-price'><del>Rp. "+formatNumber(v.price)+"</del></span>" +
+                      afterdisc+"" +normal+
                       "<p class='aa-product-descrip'>"+v.description+"</p>"+
                     "</figcaption>"+
                   "</figure>" +
-                  "<div class='aa-product-hvr-content'>" +
-                    "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
-                  "</div>"+
-                "</li>"
+                  // "<div class='aa-product-hvr-content'>" +
+                  //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
+                  // "</div>"+
+                  badge +
+                "</li> </div>"
                 );
             });
           }
           else{
             $('ul.aa-product-catg').append('<li>Post Not available Yet</li>');
+          }
+        }
+      });
+    }
+
+    function PopulatePost_v2(lastid) {
+      // $('ul.aa-product-catg').append('<li>An element</li>');
+      // var order = sort;
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/GetPost_nextStep",
+        data: {lastid:lastid},
+        dataType: "json",
+        success: function (response) {
+          if(response.success == true){
+            var badge = '';
+            var afterdisc = '';
+            var normal ='';
+            $.each(response.data,function (k,v) {
+              if (v.promomember == 1) {
+                badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(v.DISC,1)+" %)</span>";
+                // alert(CekDiscount());
+                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price - ((v.DISC/100)*v.price))+"</span>";
+                normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(v.price)+"</del></span>";
+              }
+              else{
+                badge = '';
+                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price)+"</span>";
+                normal = "<span class='aa-product-price'><del></del></span>";
+              }
+              $('ul.aa-product-catg').append(""+
+                "<div class = 'post-id' id = '"+v.id+"'>"+
+                "<li>" +
+                  "<figure>" +
+                    "<a class='aa-product-img' href='#'>"+
+                      "<div class='image size-fixed scale-fit' style='background-image: url("+v.imagemain+");'>"+
+                        "<img src='"+v.imagemain+"' alt='"+v.tittle+"' width='400' height='400'>"+
+                      "</div>"+
+                    "</a>" +
+                    "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
+                    "<figcaption>" +
+                      "<h4 class='aa-product-title'><a href='#'>"+v.tittle+"</a></h4>" +
+                      afterdisc+"" +normal+
+                      "<p class='aa-product-descrip'>"+v.description+"</p>"+
+                    "</figcaption>"+
+                  "</figure>" +
+                  // "<div class='aa-product-hvr-content'>" +
+                  //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
+                  // "</div>"+
+                  badge +
+                "</li> </div>"
+                );
+            });
+          }
+          // else{
+          //   $('ul.aa-product-catg').append('<li>Post Not available Yet</li>');
+          // }
+        }
+      });
+    }
+
+    function CekDiscount() {
+      var discount = 0;
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/GetPromo",
+        data: {'order':'order'},
+        dataType: "json",
+        success: function (response) {
+          if (response.success == true) {
+            
+            $.each(response.data,function (k,v) {
+              discount = v.benefitdiscount;
+            });
+            // console.log(discount);
+            return discount;
           }
         }
       });
@@ -324,32 +520,33 @@ $(function () {
       var canvas = document.createElement('canvas');
       var MAX_WIDTH = width1;
       var MAX_HEIGHT = height1;
-      var width = img.width;
-      var height = img.height;
+      // var width = img.width;
+      // var height = img.height;
 
-      if (width > height) {
-        if (width > MAX_WIDTH) {
-          height *= MAX_WIDTH / width;
-          width = MAX_WIDTH;
-        }
-        else{
-          // height = MAX_HEIGHT;
-          // width = MAX_WIDTH;
-        }
-      } else {
-        if (height > MAX_HEIGHT) {
-          width *= MAX_HEIGHT / height;
-          height = MAX_HEIGHT;
-        }
-        else{
-          // width = MAX_WIDTH;
-          // height = MAX_HEIGHT;
-        }
-      }
-      canvas.width = width;
-      canvas.height = height;
+      // if (width > height) {
+      //   if (width > MAX_WIDTH) {
+      //     height *= MAX_WIDTH / width;
+      //     width = MAX_WIDTH;
+      //   }
+      //   else{
+      //     // height = MAX_HEIGHT;
+      //     // width = MAX_WIDTH;
+      //   }
+      // } else {
+      //   if (height > MAX_HEIGHT) {
+      //     width *= MAX_HEIGHT / height;
+      //     height = MAX_HEIGHT;
+      //   }
+      //   else{
+      //     // width = MAX_WIDTH;
+      //     // height = MAX_HEIGHT;
+      //   }
+      // }
+
+      canvas.width = MAX_WIDTH;
+      canvas.height = MAX_HEIGHT;
       var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.drawImage(img, 0, 0, MAX_WIDTH, MAX_HEIGHT);
       // console.log(canvas.toDataURL());
       return canvas.toDataURL();
   }

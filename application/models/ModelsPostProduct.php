@@ -11,13 +11,32 @@ class ModelsPostProduct extends CI_Model
 	{
 		parent::__construct();
 	}
-	function GetPost($order)
+	function GetPost($field,$order,$rowperpage, $rowno)
+	{
+		$x = 0;
+		$data = "
+			SELECT @i:=@i+1 idpost,a.*,(SELECT image FROM imagetable b WHERE b.postid = a.id ORDER BY b.id LIMIT 1) imagemain,
+			CASE WHEN a.promomember = 1 THEN (SELECT MAX(x.benefitdiscount) FROM mastersettingmember x) ELSE 0 END DISC
+			FROM post_product a,(SELECT @i:=0) bla
+			WHERE a.tglpasif is null
+			ORDER BY $field $order
+			LIMIT $rowno,$rowperpage
+			;
+		";
+		// $this->db->order_by($order);
+		return $this->db->query($data);
+	}
+	function GetPostNextLoad($last)
 	{
 		$data = "
-			SELECT a.*,(SELECT image FROM imagetable b WHERE b.postid = a.id ORDER BY b.id LIMIT 1) imagemain FROM post_product a
-			WHERE a.tglpasif is null
+		SELECT X.* FROM (
+			SELECT @i:=@i+1 idpost,a.*,(SELECT image FROM imagetable b WHERE b.postid = a.id ORDER BY b.id LIMIT 1) imagemain,
+			CASE WHEN a.promomember = 1 THEN (SELECT MAX(x.benefitdiscount) FROM mastersettingmember x) ELSE 0 END DISC
+			FROM post_product a,(SELECT @i:=0) bla
+			WHERE a.tglpasif is null 
+		)X WHERE X.id < $last ORDER BY X.id LIMIT 3
 		";
-		$this->db->order_by($order);
+		// $this->db->order_by($order);
 		return $this->db->query($data);
 	}
 	function GetPostWhere($field,$value)
@@ -28,5 +47,12 @@ class ModelsPostProduct extends CI_Model
 		";
 		// $this->db->where($where);
 		return $this->db->query($data);
+	}
+	function GetPromoMember($type)
+	{
+		if ($type == 'max') {
+			$this->db->select_max('benefitdiscount');
+			return $this->db->get('mastersettingmember');
+		}
 	}
 }

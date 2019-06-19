@@ -4,6 +4,7 @@
     var ver = 'simpleGallery-1.0.1';
 
     function debug(message) {
+        // console.log(window.console);
         if (window.console) {
             console.log(message);
         }

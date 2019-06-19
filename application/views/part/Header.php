@@ -2,8 +2,8 @@
 <style>
 .image {
   display: inline-block;
-  margin: 4px;
-  border: 1px solid #CCCCCC;
+  /*margin: 4px;*/
+  /*border: 1px solid #CCCCCC;*/
   background-position: center center;
   background-repeat: no-repeat;
 }
@@ -37,6 +37,33 @@
   display: none;
 }
 
+/*avatar*/
+
+.avatar{
+  border-radius: 50%;
+  width:70px;
+  height:70px;
+  /* background-size:cover; */
+}
+.avatar-sm{
+  border-radius: 50%;
+  width:30px;
+  height:30px;
+}
+.avatar-med{
+  opacity: 1;
+  border-radius: 50%;
+  width:150px;
+  height:150px;
+  opacity: 1;
+  display: block;
+  transition: .5s ease;
+  backface-visibility: hidden;
+  transform: translate(40%, 0%);
+  background-size:contain;
+  background-repeat:   no-repeat;
+  background-position: center center;
+}
 </style>
 <?php
   $confirmed = $this->session->userdata('confirmed');
@@ -147,7 +174,8 @@
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
     
-
+    <!-- datatable -->
+    <link rel="stylesheet" href="<?php echo base_url();?>Assets/datatables.net-bs/css/dataTables.bootstrap.min.css" />
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

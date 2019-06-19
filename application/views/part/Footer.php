@@ -180,5 +180,10 @@
   
   <script src="<?php echo base_url();?>Assets/sweetalert2-8.8.0/package/dist/sweetalert2.min.js"></script>
   <link rel="stylesheet" href="<?php echo base_url();?>Assets/sweetalert2-8.8.0/package/dist/sweetalert2.min.css">
+
+  <!--datatable-->
+  <!-- <script src="<?php echo base_url();?>front/jquery/js/jquery.dataTables.min.js"></script> -->
+  <script src="<?php echo base_url();?>Assets/datatables.net/js/jquery.dataTables.min.js"></script>
+  <script src="<?php echo base_url();?>Assets/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
   </body>
 </html>

@@ -5,25 +5,17 @@
   <section id="aa-product-category">
     <div class="container">
       <div class="row">
-        <div class="col-lg-9 col-md-9 col-sm-8 col-md-push-3">
+        <div class="col-lg-9 col-md-9 col-sm-9 col-md-push-3">
           <div class="aa-product-catg-content">
             <div class="aa-product-catg-head">
               <div class="aa-product-catg-head-left">
                 <form action="" class="aa-sort-form">
                   <label for="">Sort by</label>
-                  <select name="">
+                  <select name="sort" id="SortPost">
                     <option value="1" selected="Default">Default</option>
-                    <option value="2">Name</option>
-                    <option value="3">Price</option>
-                    <option value="4">Date</option>
-                  </select>
-                </form>
-                <form action="" class="aa-show-form">
-                  <label for="">Show</label>
-                  <select name="">
-                    <option value="1" selected="12">12</option>
-                    <option value="2">24</option>
-                    <option value="3">36</option>
+                    <option value="2">Harga Terendah</option>
+                    <option value="3">Harga Tertinggi</option>
+                    <option value="4">Terbaru</option>
                   </select>
                 </form>
               </div>
@@ -36,6 +28,11 @@
               <ul class="aa-product-catg">
                 <!-- generate from javascript -->
               </ul>
+              
+              <!-- <div class="ajax-load text-center" style="display:none">
+              <p><img src="http://demo.itsolutionstuff.com/plugin/loader.gif">Loading More post</p>
+              </div> -->
+
               <!-- quick view modal -->                  
               <div class="modal fade" id="quick-view-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -125,7 +122,8 @@
               <!-- / quick view modal -->   
             </div>
             <div class="aa-product-catg-pagination">
-              <nav>
+              <div id='pagination'></div>
+              <!-- <nav>
                 <ul class="pagination">
                   <li>
                     <a href="#" aria-label="Previous">
@@ -143,7 +141,7 @@
                     </a>
                   </li>
                 </ul>
-              </nav>
+              </nav> -->
             </div>
           </div>
         </div>
