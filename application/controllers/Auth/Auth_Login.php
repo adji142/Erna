@@ -184,6 +184,9 @@ class Auth_Login extends CI_Controller
         $data = array('success' => false ,'message'=>array());
         $usr = $this->input->post('account');
         $pwd =$this->input->post('secreet');
+
+        $userold = $this->input->post('anonimuser');
+
         // var_dump($pwd);
         if ($this->agent->is_browser()){
             $agent = $this->agent->browser().' '.$this->agent->version();
@@ -209,7 +212,32 @@ class Auth_Login extends CI_Controller
                 );
                 $rs = $this->ModelsExecuteMaster->ExecInsert($data_ins,'userlogin_log');
                 $this->session->set_userdata($sess_data);
-                $data['success']=true;
+
+                $cekexist = $this->ModelsExecuteMaster->FindData(array('userid'=>$userold,'statuscart'=>1),'carttable');
+
+                if ($cekexist->num_rows() > 0) {
+                    try {
+                        $dataupdate = array(
+                            'userid'    => $userid
+                        
+                        );
+
+                        $exec = $this->ModelsExecuteMaster->ExecUpdate($dataupdate,array('userid'=>$userold,'statuscart'=>1),'carttable');
+                        if ($exec) {
+                            $data['success']=true;
+                        }
+                    } catch (Exception $e) {
+                        $InsertData = array(
+                            'errorcode'     => '500-01',
+                            'errordesc'     => 'Server Error',
+                            'stacktrace'    => 'Auth_Login line 234',
+                        );
+                        $exec = $this->ModelsExecuteMaster->ExecInsert($InsertData,'errorlog');
+                        $data['message'] = '500-01'.' '.$e->getMessage();
+                    }
+                }
+
+                // $data['success']=true;
                 // redirect('Id');
             }
             else{
@@ -221,6 +249,8 @@ class Auth_Login extends CI_Controller
             $data['message']='L02';
             // Username Unavailable or doesn't verification
         }
+
+
         echo json_encode($data);
     }
 

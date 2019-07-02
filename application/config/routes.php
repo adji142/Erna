@@ -56,7 +56,7 @@ $route['translate_uri_dashes'] = FALSE;
 // $route['logout'] = 'Auth/Auth_Login/logout';
 
 $route['logout'] = 'Auth/Auth_Login/logout';
-// $route['settingmember'] = 'Id/SettingMember';
+$route['detail/(:num)'] = 'SitePostController/ShowSingle/$1';
 // $route['groupmember'] = 'Id/grupmember';
 // $route['xpdc'] = 'Id/MasterXPDC';
 // $route['masterStock'] = 'Id/MasterStock';

@@ -2,6 +2,9 @@
 $(function () {
 	var form_mode = '';
 	var EmailVar = '';
+  var globalID;
+  var xpostid;
+  var global_User;
     $.ajaxSetup({
         beforeSend:function(jqXHR, Obj){
             var value = "; " + document.cookie;
@@ -35,7 +38,17 @@ $(function () {
     $(document).ready(function () {
       var confirmed = '';
       confirmed = $('#confirmed').val();
-      // alert(confirmed);
+      var userid = $('#userxid').val();
+      var anonimuser = $('#anonimuser').val();
+      var fixid;
+
+      if(userid == ''){
+        fixid = anonimuser;
+      }
+      else{
+        fixid = userid;
+      }
+      // alert($('#anonimuser').val());
       // PopulatePost('');
       if(confirmed != ''){
         Swal.fire({
@@ -52,16 +65,15 @@ $(function () {
       $('#pagination').on('click','a',function(e){
          e.preventDefault(); 
          var pageno = $(this).attr('data-ci-pagination-page');
-         loadPagination(pageno,'');
+         loadPagination(pageno,'',globalID);
        });
 
-      loadPagination(0,'');
+      loadPagination(0,'',globalID);
 
-
-      
-
-       
-    });
+      ShowCart(fixid);
+      // $('#count_cart').val('5');
+      // ChangeUser(anonimuser,userid);
+      });
 
     $('#goReg').submit(function (e) {
     	$('#btn_submit').text('Tunggu Sebentar...');
@@ -184,12 +196,16 @@ $(function () {
         $('#btn_login').attr('disabled',true);
         var account = $('#account').val();
         var secreet = $('#secreet').val();
+
+        var userid = $('#userxid').val();
+        var anonimuser = $('#anonimuser').val();
+
         e.preventDefault();
 
         $.ajax({
             type: "post",
             url: "<?=base_url()?>Auth/Auth_Login/Pro_Login",
-            data: {account:account,secreet:secreet},
+            data: {account:account,secreet:secreet,anonimuser:anonimuser},
             dataType: "json",
             success: function (response) {
                 if(response.message=="L01"){
@@ -280,9 +296,26 @@ $(function () {
         // 
         $('ul.aa-product-catg').empty();
         // PopulatePost($('#SortPost').val());
-        loadPagination(0,$('#SortPost').val())
+        loadPagination(0,$('#SortPost').val(),globalID);
       });
-
+      $('.submenu_populate').click(function () {
+        var id = $(this).attr("id");
+        globalID = id;
+        // alert(id);
+        loadPagination(0,'',globalID);
+        $('html, body').animate({
+          scrollTop:$('#scroll-hire').offset().top
+        },'slow');
+      });
+      $('.category-main').click(function () {
+        var id = $(this).attr("id");
+        globalID = id;
+        // alert(id);
+        loadPagination(0,'',globalID);
+        $('html, body').animate({
+          scrollTop:$('#scroll-hire').offset().top
+        },'slow');
+      });
       // scrolling
       $(window).scroll(function () {
         if($(window).scrollTop() + $(window).height() >= $(document).height()){
@@ -291,6 +324,33 @@ $(function () {
           // PopulatePost_v2(LastId);
         }
       });
+
+      $('#frmsearch').submit(function(e) {
+        e.preventDefault();
+        var me = $(this);
+
+        var id = $('#search').val();
+        globalID = id;
+        // alert(id);
+        loadPagination(0,'','SC'+globalID);
+        $('html, body').animate({
+          scrollTop:$('#scroll-hire').offset().top
+        },'slow');
+      });
+
+      $('#Checkout').click(function () {
+        // alert('');
+        var userid = $('#userxid').val();
+
+        if(userid == ''){
+          $('#login-modal').modal('show');
+        }
+        else{
+          alert('sudah login');
+        }
+      });
+
+      
 });
     function sendmail(email){
       var _email = email;
@@ -307,10 +367,11 @@ $(function () {
         }
       });
     }
-    function loadPagination(pagno,sort){
+    function loadPagination(pagno,sort,cat){
          $.ajax({
-           url: "<?=base_url()?>SitePostController/loadRecord/"+pagno+"/"+sort,
-           type: 'get',
+           url: "<?=base_url()?>SitePostController/loadRecord",
+           type: 'post',
+           data:{pagno:pagno,sort:sort,cat:cat},
            dataType: 'json',
            success: function(response){
               $('#pagination').html(response.pagination);
@@ -322,24 +383,12 @@ $(function () {
          sno = Number(sno);
          $('ul.aa-product-catg').empty();
          for(index in result){
-            // var id = result[index].id;
-            // var title = result[index].title;
-            // var content = result[index].slug;
-            // content = content.substr(0, 60) + " ...";
-            // var link = result[index].slug;
             sno+=1;
-   
-            // var tr = "<tr>";
-            // tr += "<td>"+ sno +"</td>";
-            // tr += "<td><a href='"+ link +"' target='_blank' >"+ title +"</a></td>";
-            // tr += "</tr>";
-            // $('#postsList tbody').append(tr);
-            // alert(formatNumber(result[index].price - ((result[index].DISC/100)*result[index].price)));
             var badge = '';
             var afterdisc = '';
             var normal ='';
             if (result[index].promomember == 1) {
-              badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(result[index].DISC,1)+" %)</span>";
+              badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! Up To ("+Math.round(result[index].DISC,1)+" %)</span>";
               // alert(CekDiscount());
               afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(result[index].price - ((result[index].DISC/100)*result[index].price))+"</span>";
               normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(result[index].price)+"</del></span>";
@@ -351,14 +400,15 @@ $(function () {
             }
             $('ul.aa-product-catg').append(""+
               "<div class = 'post-id' id = '"+result[index].id+"'>"+
+              "<input type ='hidden' id = 'indexpostid' value = '"+result[index].id+"' />"+
               "<li>" +
                 "<figure>" +
-                  "<a class='aa-product-img' href='#'>"+
+                  "<a class='aa-product-img' href='<?php echo base_url('detail'); ?>/"+result[index].id+"' style='cursor:pointer;' id = 'gotosingle' >"+
                     "<div class='image size-fixed scale-fit' style='background-image: url("+result[index].imagemain+");'>"+
                       "<img src='"+result[index].imagemain+"' alt='"+result[index].tittle+"' width='400' height='400'>"+
                     "</div>"+
                   "</a>" +
-                  "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
+                  "<a class='aa-add-card-btn disabled' href='#' id='addcart_direct' onclick='add_cart("+result[index].id+")'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
                   "<figcaption>" +
                     "<h4 class='aa-product-title'><a href='#'>"+result[index].tittle+"</a></h4>" +
                     afterdisc+"" +normal+
@@ -374,117 +424,6 @@ $(function () {
 
           }
         }
-    function PopulatePost(sort) {
-      // $('ul.aa-product-catg').append('<li>An element</li>');
-      var order = sort;
-      $.ajax({
-        type: "post",
-        url: "<?=base_url()?>SitePostController/GetPost",
-        data: {order:order},
-        dataType: "json",
-        success: function (response) {
-          if(response.success == true){
-            var badge = '';
-            var afterdisc = '';
-            var normal ='';
-            $.each(response.data,function (k,v) {
-              if (v.promomember == 1) {
-                badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(v.DISC,1)+" %)</span>";
-                // alert(CekDiscount());
-                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price - ((v.DISC/100)*v.price))+"</span>";
-                normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(v.price)+"</del></span>";
-              }
-              else{
-                badge = '';
-                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price)+"</span>";
-                normal = "<span class='aa-product-price'><del></del></span>";
-              }
-              $('ul.aa-product-catg').append(""+
-                "<div class = 'post-id' id = '"+v.id+"'>"+
-                "<li>" +
-                  "<figure>" +
-                    "<a class='aa-product-img' href='#'>"+
-                      "<div class='image size-fixed scale-fit' style='background-image: url("+v.imagemain+");'>"+
-                        "<img src='"+v.imagemain+"' alt='"+v.tittle+"' width='400' height='400'>"+
-                      "</div>"+
-                    "</a>" +
-                    "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
-                    "<figcaption>" +
-                      "<h4 class='aa-product-title'><a href='#'>"+v.tittle+"</a></h4>" +
-                      afterdisc+"" +normal+
-                      "<p class='aa-product-descrip'>"+v.description+"</p>"+
-                    "</figcaption>"+
-                  "</figure>" +
-                  // "<div class='aa-product-hvr-content'>" +
-                  //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
-                  // "</div>"+
-                  badge +
-                "</li> </div>"
-                );
-            });
-          }
-          else{
-            $('ul.aa-product-catg').append('<li>Post Not available Yet</li>');
-          }
-        }
-      });
-    }
-
-    function PopulatePost_v2(lastid) {
-      // $('ul.aa-product-catg').append('<li>An element</li>');
-      // var order = sort;
-      $.ajax({
-        type: "post",
-        url: "<?=base_url()?>SitePostController/GetPost_nextStep",
-        data: {lastid:lastid},
-        dataType: "json",
-        success: function (response) {
-          if(response.success == true){
-            var badge = '';
-            var afterdisc = '';
-            var normal ='';
-            $.each(response.data,function (k,v) {
-              if (v.promomember == 1) {
-                badge = "<span class='aa-badge aa-sale' href='#'>Member Benefit! ("+Math.round(v.DISC,1)+" %)</span>";
-                // alert(CekDiscount());
-                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price - ((v.DISC/100)*v.price))+"</span>";
-                normal = "<span class='aa-product-price'><del>Rp. "+formatNumber(v.price)+"</del></span>";
-              }
-              else{
-                badge = '';
-                afterdisc = "<span class='aa-product-price'>Rp. "+formatNumber(v.price)+"</span>";
-                normal = "<span class='aa-product-price'><del></del></span>";
-              }
-              $('ul.aa-product-catg').append(""+
-                "<div class = 'post-id' id = '"+v.id+"'>"+
-                "<li>" +
-                  "<figure>" +
-                    "<a class='aa-product-img' href='#'>"+
-                      "<div class='image size-fixed scale-fit' style='background-image: url("+v.imagemain+");'>"+
-                        "<img src='"+v.imagemain+"' alt='"+v.tittle+"' width='400' height='400'>"+
-                      "</div>"+
-                    "</a>" +
-                    "<a class='aa-add-card-btn' href='#'><span class='fa fa-shopping-cart'></span>Add To Cart</a>" +
-                    "<figcaption>" +
-                      "<h4 class='aa-product-title'><a href='#'>"+v.tittle+"</a></h4>" +
-                      afterdisc+"" +normal+
-                      "<p class='aa-product-descrip'>"+v.description+"</p>"+
-                    "</figcaption>"+
-                  "</figure>" +
-                  // "<div class='aa-product-hvr-content'>" +
-                  //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
-                  // "</div>"+
-                  badge +
-                "</li> </div>"
-                );
-            });
-          }
-          // else{
-          //   $('ul.aa-product-catg').append('<li>Post Not available Yet</li>');
-          // }
-        }
-      });
-    }
 
     function CekDiscount() {
       var discount = 0;
@@ -550,4 +489,191 @@ $(function () {
       // console.log(canvas.toDataURL());
       return canvas.toDataURL();
   }
+  function add_cart(xpostid) {
+    $('#addcart_direct').attr('disabled',true);
+    var id_post = xpostid;
+    var userid = $('#userxid').val();
+    var anonimuser = $('#anonimuser').val();
+    var fixid;
+
+    if(userid == ''){
+      fixid = anonimuser;
+    }
+    else{
+      fixid = userid;
+    }
+
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/CartSave",
+      data: {id_post:id_post,fixid:fixid},
+      dataType: "json",
+      success: function (response) {
+        if(response.success == false){
+          console.log(response.message);
+          Swal.fire({
+            type: 'error',
+            title: 'Woops...',
+            text: response.message,
+          });
+        }
+        $('#addcart_direct').attr('disabled',false);
+
+        // load count cart
+        ShowCart(fixid)
+        // load cart
+      }
+    });
+  }
+
+  function ShowCart(userid) {
+    $('#cart_box').empty();
+    $('#count_cart').empty();
+    global_User = userid;
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/CartPopulate",
+      data: {userid:userid},
+      dataType: "json",
+      success: function (response) {
+        if(response.success == true){
+          // alert(response.count);
+          $('#count_cart').append(response.count);
+          // if (response.count > 0) {
+          //   
+          // }
+          // else{
+          //   $('#count_cart').append(13);
+          // }
+          if (response.count > 0) {
+            $.each(response.data,function (k,v) {
+              $('#cart_box').append(""+
+                "<li>"+
+                  "<a class='aa-cartbox-img' href='#'><img src='"+v.image+"' alt='"+v.tittle+"'></a>"+
+                    "<div class='aa-cartbox-info'>"+
+                      "<h4><a href='#'>"+v.tittle+"</a></h4>"+
+                      "<select id='memberopt' name='memberopt' onchange ='changeMember("+v.post_id+","+v.id+")'>"+
+                        "<option value='0' selected=''>Eceran</option>" +
+                          "<?php $setmember = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'mastersettingmember'); foreach ($setmember->result() as $key) { echo "<option value='".$key->id."' >".$key->namagrade."</option>"; }?>"+
+                      "</select>"+
+                      "<p>"+v.qtyorder+" x Rp. "+formatNumber(v.pricenet)+"</p>"+
+                    "</div>"+
+                  "<a class='aa-remove-product remove-cart' href='#' onclick='remove_cart("+v.id+")'><span class='fa fa-times'></span></a>"+
+                "</li>"
+              );
+              // $('#memberopt').val(v.idsetingmember).change();
+              // console.log(v.idsetingmember);
+              var selected;
+              selected = v.idsetingmember;
+              console.log(selected);
+
+              $('#memberopt option[value='+v.idsetingmember+']').attr('selected','selected');
+              // $("#memberopt").selectedIndex = 1;
+              // $('#memberopt').prop('selectedIndex', selected.toString()); 
+              // alert($('#sel1'));
+              // if()
+            });
+            $('#cart_box').append(""+
+              "<li>"+
+                "<span class='aa-cartbox-total-title'>"+
+                  "Total" +
+                "</span>"+
+                "<span class='aa-cartbox-total-price'>"+
+                  "Rp. "+formatNumber(response.sum)+
+                "</span>"+
+              "</li>"
+            );
+          }
+          // console.log(response.data);
+        }
+        else{
+          $('#count_cart').append(0);
+        }
+      }
+    });
+  }
+
+  function changeMember(postid,cartid) {
+      // console.log(global_User+" ini user id");
+      // console.log(postid+" ini post id");
+      // console.log($('#memberopt').val()+" ini post id");
+      var memberid = $('#memberopt').val();
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/Update_Price",
+        data: {global_User:global_User,postid:postid,memberid:memberid,cartid:cartid},
+        dataType: "json",
+        success:function (response) {
+          if (response.success == true) {
+            ShowCart(global_User);
+          }
+          else{
+            Swal.fire({
+              type: 'error',
+              title: 'Whoops',
+              text: 'Something Wrong, '+response.message,
+              // footer: '<a href>Why do I have this issue?</a>'
+            });
+          }
+        }
+      });
+  }
+  function remove_cart(id) {
+    // alert(id);
+    var userid = $('#userxid').val();
+    var anonimuser = $('#anonimuser').val();
+    var fixid;
+
+    if(userid == ''){
+      fixid = anonimuser;
+    }
+    else{
+      fixid = userid;
+    }
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/Rem_Cart",
+      data: {id:id},
+      dataType: "json",
+      success: function (response) {
+        if(response.success == true){
+          ShowCart(fixid);
+        }
+        else{
+          Swal.fire({
+            type: 'error',
+            title: 'Whoops',
+            text: 'Something Wrong, '+response.message,
+            // footer: '<a href>Why do I have this issue?</a>'
+          });
+        }
+      }
+    });
+  }
+  function ChangeUser(userold,usernew) {
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/cekuser",
+      data: {userold:userold,usernew:usernew},
+      dataType: "json",
+      success: function (response) {
+        if(response.success == true){
+          ShowCart(fixid);
+        }
+        // else{
+        //   Swal.fire({
+        //     type: 'error',
+        //     title: 'Whoops',
+        //     text: 'Something Wrong, '+response.message,
+        //     // footer: '<a href>Why do I have this issue?</a>'
+        //   });
+        // }
+      }
+    });
+  }
+  function gotosingle(id) {
+    // alert('');
+    window.location.href = "<?php echo base_url('detail'); ?>"+"/"+id;
+  }
+  
 </script>

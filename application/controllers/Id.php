@@ -12,6 +12,7 @@ class Id extends CI_Controller
 		parent::__construct();
 		$this->load->model('GlobalVar');
 		$this->load->model('ModelsExecuteMaster');
+		$this->load->library('user_agent');
 	}
 	function test()
 	{
@@ -21,6 +22,31 @@ class Id extends CI_Controller
 	function Index()
 	{
 		$this->load->view('Index');
+		// var_dump(gethostbyname(getHostName()));
+		if ($this->agent->is_browser()){
+            $agent = $this->agent->browser().' '.$this->agent->version();
+        }elseif ($this->agent->is_mobile()){
+            $agent = $this->agent->mobile();
+        }else{
+            $agent = 'Data user gagal di dapatkan';
+        }
+		$ip = gethostbyname(getHostName());
+		$platform = $this->agent->platform();
+		$browser = $agent;
+
+		$data = array(
+			'ip'		=> $ip,
+			'platform'	=> $platform,
+			'browser'	=> $browser
+		);
+		$this->ModelsExecuteMaster->ExecInsert($data,'visitlog');
+
+		// Session
+		if (!$this->session->userdata('anonimouse')) {
+			$id_reg = rand(0,999999999);
+	        $sess_data['anonimouse']=md5($id_reg);
+	        $this->session->set_userdata($sess_data);	
+		}
 	}
 	function Home()
 	{

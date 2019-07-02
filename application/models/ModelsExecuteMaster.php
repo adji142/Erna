@@ -68,4 +68,10 @@ class ModelsExecuteMaster extends CI_Model
 			';
 		return $this->db->query($data);
 	}
+	function SelectSum($where,$table,$field)
+	{
+		$this->db->select_sum($field);
+		$this->db->where($where);
+		return $this->db->get($table);
+	}
 }

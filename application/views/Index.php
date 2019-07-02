@@ -24,7 +24,7 @@
                 <a id="list-catg" href="#"><span class="fa fa-list"></span></a>
               </div>
             </div>
-            <div class="aa-product-catg-body">
+            <div class="aa-product-catg-body" id="scroll-hire">
               <ul class="aa-product-catg">
                 <!-- generate from javascript -->
               </ul>
@@ -46,35 +46,6 @@
                           <div id="quick-slider">
                             <!-- slider hire -->
                           </div>
-                          <!-- <div class="aa-product-view-slider">
-                            <div class="simpleLens-gallery-container" id="demo-1">
-                              <div class="simpleLens-container">
-                                  <div class="simpleLens-big-image-container">
-                                      <a class="simpleLens-lens-image" data-lens-image="img/view-slider/large/polo-shirt-1.png">
-                                          <img src="img/view-slider/medium/polo-shirt-1.png" class="simpleLens-big-image">
-                                      </a>
-                                  </div>
-                              </div>
-                              <div class="simpleLens-thumbnails-container">
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-1.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-1.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-1.png">
-                                  </a>                                    
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-3.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-3.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-3.png">
-                                  </a>
-
-                                  <a href="#" class="simpleLens-thumbnail-wrapper"
-                                     data-lens-image="img/view-slider/large/polo-shirt-4.png"
-                                     data-big-image="img/view-slider/medium/polo-shirt-4.png">
-                                      <img src="img/view-slider/thumbnail/polo-shirt-4.png">
-                                  </a>
-                              </div>
-                            </div>
-                          </div> -->
                         </div>
                         <!-- Modal view content -->
                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -123,25 +94,6 @@
             </div>
             <div class="aa-product-catg-pagination">
               <div id='pagination'></div>
-              <!-- <nav>
-                <ul class="pagination">
-                  <li>
-                    <a href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                    </a>
-                  </li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li>
-                    <a href="#" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav> -->
             </div>
           </div>
         </div>
@@ -155,7 +107,7 @@
               <ul class="aa-catg-nav">
                 <?php
                   foreach ($headerLv1->result() as $Cat) {
-                    echo "<li><a href='#'>".$Cat->category."</a></li>";
+                    echo "<li><a href='#' class = 'category-main' id = 'MC".$Cat->id."'>".$Cat->category."</a></li>";
                   }
                 ?>
               </ul>
@@ -164,30 +116,14 @@
             <div class="aa-sidebar-widget">
               <h3>Tags</h3>
               <div class="tag-cloud">
-                <a href="#">Fashion</a>
-                <a href="#">Ecommerce</a>
-                <a href="#">Shop</a>
-                <a href="#">Hand Bag</a>
-                <a href="#">Laptop</a>
-                <a href="#">Head Phone</a>
-                <a href="#">Pen Drive</a>
+                <a href="#">Member Benefit</a>
+                <a href="#">HOT</a>
+                <a href="#">New</a>
+                <a href="#">Hampir Habis</a>
+                <a href="#">Top Sale</a>
               </div>
             </div>
-            <!-- single sidebar -->
-            <div class="aa-sidebar-widget">
-              <h3>Shop By Price</h3>              
-              <!-- price range -->
-              <div class="aa-sidebar-price-range">
-               <form action="">
-                  <div id="skipstep" class="noUi-target noUi-ltr noUi-horizontal noUi-background">
-                  </div>
-                  <span id="skip-value-lower" class="example-val">30.00</span>
-                 <span id="skip-value-upper" class="example-val">100.00</span>
-                 <button class="aa-filter-btn" type="submit">Filter</button>
-               </form>
-              </div>              
 
-            </div>
           </aside>
         </div>
        
