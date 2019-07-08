@@ -153,7 +153,23 @@
     </div><!-- /.modal-dialog -->
   </div>
 
-    
+    <!-- Login Modal -->  
+  <div class="modal fade" id="addqty-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">                      
+        <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4>Tambah Lebih banyak lagi</h4>
+          <!-- <form class="aa-login-form" id="goLog" enctype='application/json'> -->
+            <label for="">Tambah Jumlah<span>*</span></label>
+            <input type="hidden" name="idaddcart" id="idaddcart">
+            <input type="Number" placeholder="Jumlah" name="account" id="JmlOrder" class="btn" width="100%">
+            <button class="btn btn-primary" id="btn_TambahQty" onclick="countingpraise()">Update</button>
+          <!-- </form> -->
+        </div>                        
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
 
   <!-- jQuery library -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

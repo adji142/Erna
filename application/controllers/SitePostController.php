@@ -384,7 +384,7 @@ class SitePostController extends CI_Controller
 		// perhitungan discount
 
 		if ($discount >0) {
-			$net = ($discount/100)*$harganormal;
+			$net = $harganormal - (($discount/100)*$harganormal);
 		}
 		else{
 			$data['message'] = 'Member Setting Not Found';

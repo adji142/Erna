@@ -89,4 +89,8 @@ class Id extends CI_Controller
 	{
 		$this->load->view('WebSetInfo');
 	}
+	function CheckOut()
+	{
+		$this->load->view('Checkout');
+	}
 }

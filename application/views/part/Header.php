@@ -269,7 +269,7 @@
                   <ul id="cart_box">
                     <!-- generate from javascript -->
                   </ul>
-                  <a class="aa-cartbox-checkout aa-primary-btn" id="Checkout" style="cursor:pointer;">Checkout</a>
+                  <a class="aa-cartbox-checkout aa-primary-btn" id="Checkout" style="cursor:pointer;" href="<?php echo base_url('checkout'); ?>">Checkout</a>
                 </div>
               </div>
               <!-- / cart box -->

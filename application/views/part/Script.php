@@ -348,7 +348,7 @@ $(function () {
           $('#login-modal').modal('show');
         }
         else{
-          alert('sudah login');
+          // alert('sudah login');
         }
       });
       
@@ -553,7 +553,7 @@ $(function () {
                   "<a class='aa-cartbox-img' href='#'><img src='"+v.image+"' alt='"+v.tittle+"'></a>"+
                     "<div class='aa-cartbox-info'>"+
                       "<h4><a href='#'>"+v.tittle+"</a></h4>"+
-                      "<button id ='dec' class = 'btn btn-primary' onclick='decrease("+v.id+")'>-</button><input type = 'Number' min = '0' max = '1000' maxlength = '4' id ='"+v.id+"' class ='btn ordr' value = '"+v.qtyorder+"' onkeyup = 'countingpraise("+v.id+")'><button id ='inc' class = 'btn btn-mini' onclick='increase("+v.id+")'>+</button>"+
+                      "<button id ='dec' class = 'btn btn-primary' onclick='decrease("+v.id+")'>-</button><input type = 'Number' min = '0' max = '1000' maxlength = '4' id ='"+v.id+"' class ='btn ordr' value = '"+v.qtyorder+"' onClick = 'ShowModals("+v.id+","+v.qtyorder+")' readonly><button id ='inc' class = 'btn btn-mini' onclick='increase("+v.id+")'>+</button>"+
                       "<p>"+v.qtyorder+" x Rp. "+formatNumber(v.pricenet)+"</p>"+
                     "</div>"+
                   "<a class='aa-remove-product remove-cart' href='#' onclick='remove_cart("+v.id+")'><span class='fa fa-times'></span></a>"+
@@ -727,9 +727,12 @@ $(function () {
         });
     }
   }
-  function countingpraise(id) {
-    var Qty = $('#'+id).val();
-      var cartid = id;
+  function countingpraise() {
+    
+    $('#btn_TambahQty').text('Tunggu Sebentar...');
+    $('#btn_TambahQty').attr('disabled',true);
+    var Qty = $('#JmlOrder').val();
+      var cartid = $('#idaddcart').val();
         $.ajax({
           type: "post",
           url: "<?=base_url()?>SitePostController/Update_Price",
@@ -739,6 +742,7 @@ $(function () {
             if (response.success == true) {
               $('#cart_box').empty();
               $('#count_cart').empty();
+              $('#addqty-modal').modal('toggle');
               ShowCart(global_User);
             }
             else{
@@ -751,5 +755,13 @@ $(function () {
             }
           }
         });
+  }
+  function ShowModals(id,qtyorder) {
+    $('#btn_TambahQty').text('Update');
+    $('#btn_TambahQty').attr('disabled',false);
+
+    $('#idaddcart').val(id);
+    $('#JmlOrder').val(qtyorder);
+    $('#addqty-modal').modal('show');
   }
 </script>
