@@ -63,7 +63,17 @@
   background-size:contain;
   background-repeat:   no-repeat;
   background-position: center center;
-}
+
+  }
+  /*inut spinner*/
+  input[type=number]::-webkit-inner-spin-button, 
+  input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      margin: 0; 
+  }
+
 </style>
 <?php
   $confirmed = $this->session->userdata('confirmed');

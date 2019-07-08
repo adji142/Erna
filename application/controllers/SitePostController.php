@@ -326,27 +326,52 @@ class SitePostController extends CI_Controller
 		}
 		echo json_encode($data);
 	}
+	function GetMemberPromo()
+	{
+		$data = array('success' => false ,'message'=>array(),'data'=>array());
+		$find_memberdisc = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'mastersettingmember');
+
+		if ($find_memberdisc->num_rows() > 0) {
+			$data['success'] = true;
+			$data['data'] = $find_memberdisc->result();
+		}
+
+		echo json_encode($data);
+	}
 	function Update_Price()
 	{
 		$data = array('success' => false ,'message'=>array());
 
-		$global_User = $this->input->post('global_User');
-		$postid = $this->input->post('postid');
-		$memberid = $this->input->post('memberid');
+		// $global_User = $this->input->post('global_User');
+		// $postid = $this->input->post('postid');
+		// $memberid = $this->input->post('memberid');
+		// $cartid = $this->input->post('cartid');
+		$Qty = $this->input->post('Qty');
 		$cartid = $this->input->post('cartid');
 		// global var
 		$discount = 0;
 		$harganormal = 0;
 		$minspen = 0;
 		$net = 0;
+		$postid = 0;
+		$memberid = 0;
 		// get discount
-		$find_memberdisc = $this->ModelsExecuteMaster->FindData(array('id'=>$memberid),'mastersettingmember');
+		$find_memberdisc = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'mastersettingmember');
 		if($find_memberdisc->num_rows() >0){
-			$discount = $find_memberdisc->row()->benefitdiscount;
-			$minspen = $find_memberdisc->row()->minimumspend;
+			foreach ($find_memberdisc->result() as $key) {
+				if ($Qty >= $key->minimumspend) {
+					$discount = $key->benefitdiscount;
+					$memberid = $key->id;
+				}
+			}
 		}
-		else{
-			$minspen = 1;
+
+		// get post
+
+		$getpostid = $this->ModelsExecuteMaster->FindData(array('id'=>$cartid),'carttable');
+
+		if ($getpostid->num_rows() > 0) {
+			$postid = $getpostid->row()->postid;
 		}
 		// Get price
 
@@ -369,7 +394,7 @@ class SitePostController extends CI_Controller
 		// var_dump($discount);
 		try {
 			$dataupdate = array(
-				'qtyorder'	=> $minspen,
+				'qtyorder'	=> $Qty,
 				'pricenet'	=> $net,
 				'idsetingmember' => $memberid
 			);
@@ -427,18 +452,6 @@ class SitePostController extends CI_Controller
 				// $data['image'] = $getimage->result();
 
 				foreach ($getimage->result() as $key) {
-					$im = base64_decode($key->image);
-					// L
-					$filenameL = base_url('public/img_post/L/');
-					$filenameL .= 'L'.uniqid('intrinsic_').'.png';
-					$file = fopen($filenameL, 'a');
-					  $newIamge = $this->resize_image($im, 900, 1024);
-					  // var_dump($newIamge);
-					  fwrite($file, $newIamge);
-					  fclose($file);
-					  return $filenameL;
-					// var_dump($this->resize_image($key->image,900, 1024));
-
 					// try {
 					// 	$this->ModelsExecuteMaster->ExecUpdate(array('name_l'=>$filenameL),array('id'=>$key->id),'imagetable');	
 					// } catch (Exception $e) {
@@ -492,7 +505,7 @@ class SitePostController extends CI_Controller
 			}
 		}
 
-		// $this->load->view('Postsingle',$data);
+		$this->load->view('Postsingle',$data);
 	}
 	public function resize_image($file, $w, $h, $crop=FALSE) {
 	  //list($width, $height) = getimagesize($file);

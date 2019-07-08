@@ -184,7 +184,9 @@ $(function () {
                       "</div> "+
                   "</a>"
                 );
-              // console.log(resizeImage(v.image,45,55));
+              console.log(resizeImage(v.image,45,55));
+              // console.log(v.image);
+              alert(resizeImage(v.image,45,55));
             });
           }
         }
@@ -349,7 +351,6 @@ $(function () {
           alert('sudah login');
         }
       });
-
       
 });
     function sendmail(email){
@@ -415,9 +416,9 @@ $(function () {
                     "<p class='aa-product-descrip'>"+result[index].description+"</p>"+
                   "</figcaption>"+
                 "</figure>" +
-                // "<div class='aa-product-hvr-content'>" +
-                //   "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+v.id+")'><span class='fa fa-search'></span></a>" +
-                // "</div>"+
+                "<div class='aa-product-hvr-content'>" +
+                  "<a href='#' data-toggle2='tooltip' data-placement='top' title='Quick View' data-toggle='modal' data-target='#quick-view-modal' onclick = 'PostID("+result[index].id+")'><span class='fa fa-search'></span></a>" +
+                "</div>"+
                 badge +
               "</li> </div>"
               );
@@ -552,10 +553,7 @@ $(function () {
                   "<a class='aa-cartbox-img' href='#'><img src='"+v.image+"' alt='"+v.tittle+"'></a>"+
                     "<div class='aa-cartbox-info'>"+
                       "<h4><a href='#'>"+v.tittle+"</a></h4>"+
-                      "<select id='memberopt' name='memberopt' onchange ='changeMember("+v.post_id+","+v.id+")'>"+
-                        "<option value='0' selected=''>Eceran</option>" +
-                          "<?php $setmember = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'mastersettingmember'); foreach ($setmember->result() as $key) { echo "<option value='".$key->id."' >".$key->namagrade."</option>"; }?>"+
-                      "</select>"+
+                      "<button id ='dec' class = 'btn btn-primary' onclick='decrease("+v.id+")'>-</button><input type = 'Number' min = '0' max = '1000' maxlength = '4' id ='"+v.id+"' class ='btn ordr' value = '"+v.qtyorder+"' onkeyup = 'countingpraise("+v.id+")'><button id ='inc' class = 'btn btn-mini' onclick='increase("+v.id+")'>+</button>"+
                       "<p>"+v.qtyorder+" x Rp. "+formatNumber(v.pricenet)+"</p>"+
                     "</div>"+
                   "<a class='aa-remove-product remove-cart' href='#' onclick='remove_cart("+v.id+")'><span class='fa fa-times'></span></a>"+
@@ -675,5 +673,83 @@ $(function () {
     // alert('');
     window.location.href = "<?php echo base_url('detail'); ?>"+"/"+id;
   }
-  
+  function increase(id) {
+    $('#'+id).val(parseInt($('#'+id).val())+1);
+
+    var Qty = $('#'+id).val();
+    var cartid = id;
+    
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/Update_Price",
+        data: {Qty:Qty,cartid:cartid},
+        dataType: "json",
+        success:function (response) {
+          if (response.success == true) {
+            ShowCart(global_User);
+          }
+          else{
+            Swal.fire({
+              type: 'error',
+              title: 'Whoops',
+              text: 'Something Wrong, '+response.message,
+              // footer: '<a href>Why do I have this issue?</a>'
+            });
+          }
+        }
+      });
+  }
+  function decrease(id) {
+    if(parseInt($('#'+id).val()) > 1){
+      $('#'+id).val(parseInt($('#'+id).val())-1);
+
+      var Qty = $('#'+id).val();
+      var cartid = id;
+      
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/Update_Price",
+          data: {Qty:Qty,cartid:cartid},
+          dataType: "json",
+          success:function (response) {
+            if (response.success == true) {
+              ShowCart(global_User);
+            }
+            else{
+              Swal.fire({
+                type: 'error',
+                title: 'Whoops',
+                text: 'Something Wrong, '+response.message,
+                // footer: '<a href>Why do I have this issue?</a>'
+              });
+            }
+          }
+        });
+    }
+  }
+  function countingpraise(id) {
+    var Qty = $('#'+id).val();
+      var cartid = id;
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/Update_Price",
+          data: {Qty:Qty,cartid:cartid},
+          dataType: "json",
+          success:function (response) {
+            if (response.success == true) {
+              $('#cart_box').empty();
+              $('#count_cart').empty();
+              ShowCart(global_User);
+            }
+            else{
+              Swal.fire({
+                type: 'error',
+                title: 'Whoops',
+                text: 'Something Wrong, '+response.message,
+                // footer: '<a href>Why do I have this issue?</a>'
+              });
+            }
+          }
+        });
+  }
 </script>
