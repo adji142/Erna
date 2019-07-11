@@ -25,6 +25,9 @@ class ModelsExecuteMaster extends CI_Model
 		if ($table == 'mastersettingmember') {
 			$this->db->order_by('minimumspend','ASC');
 		}
+		if ($table == 'provinces') {
+			$this->db->order_by('name','ASC');
+		}
 		return $this->db->get($table);
 	}
 	function FindDataWithLike($where,$table){

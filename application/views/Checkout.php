@@ -12,6 +12,55 @@
               <div class="col-md-8">
                 <div class="checkout-left">
                   <div class="panel-group" id="accordion">
+                    <!-- Tac -->
+                    <div class="panel panel-default aa-checkout-login">
+                      <div class="panel-heading">
+                        <h4 class="panel-title">
+                          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                            *Read Me* MEMBER BENEFIT PROMO
+                          </a>
+                        </h4>
+                      </div>
+                      <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                          <center><h2>MEMBER BENEFIT</h2></center>
+                          <p>Selamat datang pengunjung <a href="#">namasite.com</a> untuk memberi pengalaman berbelanja yang menyenangkan, kami <a href="#">namasite.com</a> memberikan penawaran special untuk anda pelanggan setia <a href="#">namasite.com</a>, MEMBER BENEFIT ini akan berkali kali lipat menguntungkan anda para pengunjung setia <a href="#">namasite.com</a>, bagaimana tidak anda berkesempatan untuk mendapatkan potongan belanja secara langsung hanya dengan berbelanja di <a href="#">namasite.com</a>. Dan juga anda berkesempatan untuk menjadi member kami. Dengan Sekali transaksi anda akan menikmati keuntungan nya seumur hidup.</p>
+                          <p>Berikut syarat dan ketentuan MEMBER BENEFIT:</p>
+                          <table class="table table-responsive">
+                            <thead>
+                              <tr>
+                                <td>Jenis Member</td>
+                                <td>Syarat</td>
+                                <td>Benefit Discount</td>
+                                <td>Benefit Lain</td>
+                                <td>Quota Per Kota</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <?php
+                                $exec = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'mastersettingmember');
+                                foreach ($exec->result() as $key) {
+                                  echo "
+                                    <tr>
+                                      <td>".$key->namagrade."</td>
+                                      <td>Minimum pembelian ".$key->minimumspend." Pcs</td>
+                                      <td>".$key->benefitdiscount." %</td>
+                                      <td>".$key->benefitlain1.", ".$key->benefitlain2.", ".$key->benefitlain3."</td>
+                                      <td>".$key->quota."</td>
+                                    </tr>
+                                  ";
+                                }
+                              ?>
+                            </tbody>
+                          </table>
+                          <p>
+                            Info lebih detail silahkan menghubungi kami lewat live chat atau kontak media sosial kami.
+                          </p>
+                          <p>Terimakasih</p>
+                          <p>Selamat Berbelanja</p>
+                        </div>
+                      </div>
+                    </div>
                     <!-- Billing Details -->
                     <div class="panel panel-default aa-checkout-billaddress">
                       <div class="panel-heading">
@@ -36,13 +85,6 @@
                             </div>
                           </div> 
                           <div class="row">
-                            <div class="col-md-12">
-                              <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="Company name">
-                              </div>                             
-                            </div>                            
-                          </div>  
-                          <div class="row">
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
                                 <input type="email" placeholder="Email Address*">
@@ -64,24 +106,14 @@
                           <div class="row">
                             <div class="col-md-12">
                               <div class="aa-checkout-single-bill">
-                                <select>
-                                  <option value="0">Select Your Country</option>
-                                  <option value="1">Australia</option>
-                                  <option value="2">Afganistan</option>
-                                  <option value="3">Bangladesh</option>
-                                  <option value="4">Belgium</option>
-                                  <option value="5">Brazil</option>
-                                  <option value="6">Canada</option>
-                                  <option value="7">China</option>
-                                  <option value="8">Denmark</option>
-                                  <option value="9">Egypt</option>
-                                  <option value="10">India</option>
-                                  <option value="11">Iran</option>
-                                  <option value="12">Israel</option>
-                                  <option value="13">Mexico</option>
-                                  <option value="14">UAE</option>
-                                  <option value="15">UK</option>
-                                  <option value="16">USA</option>
+                                <select id="Provinsi" name="Provinsi">
+                                  <option value="0">Pilih Provinsi</option>
+                                  <?php 
+                                    $exec = $this->ModelsExecuteMaster->FindData(array(),'provinces');
+                                    foreach ($exec->result() as $key) {
+                                      echo "<option value='".$key->id."'>".$key->name."</option>";
+                                    }
+                                  ?>
                                 </select>
                               </div>                             
                             </div>                            
@@ -89,19 +121,26 @@
                           <div class="row">
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="Appartment, Suite etc.">
+                                <!-- <input type="text" placeholder="Appartment, Suite etc."> -->
+                                <select id="kota" name="kota">
+                                  <option value="0">Pilih Kota</option>
+                                </select>
                               </div>                             
                             </div>
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="City / Town*">
+                                <select id="kec" name="kec">
+                                  <option value="0">Pilih Kecamatan</option>
+                                </select>
                               </div>
                             </div>
                           </div>   
                           <div class="row">
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="District*">
+                                <select id="kel" name="kel">
+                                  <option value="0">Pilih Kelurahan</option>
+                                </select>
                               </div>                             
                             </div>
                             <div class="col-md-6">
@@ -109,7 +148,27 @@
                                 <input type="text" placeholder="Postcode / ZIP*">
                               </div>
                             </div>
-                          </div>                                    
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="aa-checkout-single-bill">
+                                <select id="xpdc" name="xpdc">
+                                  <option value="0">Pilih Jasa Pengiriman</option>
+                                  <?php 
+                                    $exec = $this->ModelsExecuteMaster->FindData(array(),'masterxpdc');
+                                    foreach ($exec->result() as $key) {
+                                      echo "<option value='".$key->id."'>".$key->xpdccode." | ".$key->xpdcname."</option>";
+                                    }
+                                  ?>
+                                </select>
+                              </div>                             
+                            </div>
+                            <div class="col-md-6">
+                              <div class="aa-checkout-single-bill">
+                                <input type="text" placeholder="Estimasi Ongkir*" readonly="">
+                              </div>
+                            </div>                            
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -124,36 +183,61 @@
                       <thead>
                         <tr>
                           <th>Product</th>
-                          <th>Total</th>
+                          <th>Qty</th>
+                          <th>Harga</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>T-Shirt <strong> x  1</strong></td>
-                          <td>$150</td>
-                        </tr>
-                        <tr>
-                          <td>Polo T-Shirt <strong> x  1</strong></td>
-                          <td>$250</td>
-                        </tr>
-                        <tr>
-                          <td>Shoes <strong> x  1</strong></td>
-                          <td>$350</td>
-                        </tr>
+                        <?php
+                          $exec = $this->ModelsPostProduct->getCart($user_id);
+                          $net = '';
+                          $gros = '';
+                          foreach ($exec->result() as $key) {
+                            if ($key->idsetingmember <> 0) {
+                              $net = '<td>
+                                        <del>
+                                          '.number_format($key->price).'
+                                        </del>
+                                      '.number_format($key->pricenet).
+                                      '</td>';
+
+                              // $net = '<td><del>'.number_format($key->pricenet).'</del></td>';
+                              // $gros = '<td>'.number_format($key->price).'</td>';
+                            }
+                            else{
+                              $net = '<td>'.number_format($key->price).'</td>';
+                            }
+                            echo "
+                              <tr>
+                                <td>".$key->tittle."</td>
+                                <td>".$key->qtyorder."</td>
+                                ".$net."
+                              </tr>
+                            ";
+                          }
+                        ?>
                       </tbody>
                       <tfoot>
-                        <tr>
-                          <th>Subtotal</th>
-                          <td>$750</td>
-                        </tr>
-                         <tr>
-                          <th>Tax</th>
-                          <td>$35</td>
-                        </tr>
-                         <tr>
-                          <th>Total</th>
-                          <td>$785</td>
-                        </tr>
+                        <?php
+                          $exec = $this->ModelsPostProduct->GetSubtotal($user_id)->row();
+                          echo "
+                            <tr>
+                              <th>Subtotal</th>
+                              <td></td>
+                              <td>".number_format($exec->grosprice)."</td>
+                            </tr>
+                            <tr>
+                              <th>Discount</th>
+                              <td></td>
+                              <td>".number_format($exec->grosprice - $exec->pricenet)."</td>
+                            </tr>
+                            <tr>
+                              <th>Total</th>
+                              <td></td>
+                              <td>".number_format($exec->pricenet)."</td>
+                            </tr>
+                          ";
+                        ?>
                       </tfoot>
                     </table>
                   </div>

@@ -13,6 +13,7 @@ class Id extends CI_Controller
 		$this->load->model('GlobalVar');
 		$this->load->model('ModelsExecuteMaster');
 		$this->load->library('user_agent');
+		$this->load->model('ModelsPostProduct');
 	}
 	function test()
 	{

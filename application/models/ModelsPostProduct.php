@@ -69,7 +69,7 @@ class ModelsPostProduct extends CI_Model
 	}
 	function getCart($user)
 	{
-		$data = "SELECT a.*,(SELECT image FROM imagetable WHERE postid = a.postid ORDER BY id LIMIT 1) image,b.tittle,b.id post_id FROM carttable a
+		$data = "SELECT a.*,(SELECT image FROM imagetable WHERE postid = a.postid ORDER BY id LIMIT 1) image,b.tittle,b.id post_id,b.price FROM carttable a
 			LEFT JOIN post_product b on a.postid = b.id
 			where a.userid = '$user' AND a.statuscart =1;
 		";
@@ -77,7 +77,9 @@ class ModelsPostProduct extends CI_Model
 	}
 	function GetSubtotal($user)
 	{
-		$data = "SELECT SUM(pricenet*qtyorder) pricenet FROM carttable where userid = '$user' and statuscart = 1";
+		$data = "SELECT SUM(a.pricenet*a.qtyorder) pricenet,SUM(a.qtyorder*b.price) grosprice FROM carttable a
+		LEFT JOIN post_product b on a.postid = b.id
+		where a.userid = '$user' and a.statuscart = 1";
 		return $this->db->query($data);
 	}
 }

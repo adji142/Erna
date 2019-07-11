@@ -73,6 +73,28 @@ $(function () {
       ShowCart(fixid);
       // $('#count_cart').val('5');
       // ChangeUser(anonimuser,userid);
+
+        // var idaddr = 0;
+        // var link = 'prov';
+
+        // $.ajax({
+        //   type: "post",
+        //   url: "<?=base_url()?>SitePostController/GetInfoAddr",
+        //   data: {link:link,idaddr:idaddr},
+        //   dataType: "json",
+        //   success: function (response) {
+        //     if(response.success == true){
+        //       $('#Provinsi').empty();
+        //       $('#Provinsi').append("<option value='0'>Pilih Provinsi</option>");
+        //       $.each(response.data,function (k,v) {
+        //         $('#Provinsi').append(""+
+        //           "<option value='"+v.province_id+"'>"+v.province+"</option>"
+        //         );
+        //       });
+        //     }
+        //   }
+        // });
+
       });
 
     $('#goReg').submit(function (e) {
@@ -352,6 +374,71 @@ $(function () {
         }
       });
       
+      // info kota
+      $('#Provinsi').change(function () {
+        var idaddr = $('#Provinsi').val();
+        var link = 'kota';
+
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/GetInfoAddr",
+          data: {link:link,idaddr:idaddr},
+          dataType: "json",
+          success: function (response) {
+            if(response.success == true){
+              $('#kota').empty();
+              $.each(response.data,function (k,v) {
+                $('#kota').append(""+
+                  "<option value='"+v.id+"'>"+v.name+"</option>"
+                );
+              });
+            }
+          }
+        });
+      });
+
+      $('#kota').change(function () {
+        var idaddr = $('#kota').val();
+        var link = 'kec';
+
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/GetInfoAddr",
+          data: {link:link,idaddr:idaddr},
+          dataType: "json",
+          success: function (response) {
+            if(response.success == true){
+              $('#kec').empty();
+              $.each(response.data,function (k,v) {
+                $('#kec').append(""+
+                  "<option value='"+v.id+"'>"+v.name+"</option>"
+                );
+              });
+            }
+          }
+        });
+      });
+      $('#kec').change(function () {
+        var idaddr = $('#kec').val();
+        var link = 'kel';
+
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/GetInfoAddr",
+          data: {link:link,idaddr:idaddr},
+          dataType: "json",
+          success: function (response) {
+            if(response.success == true){
+              $('#kel').empty();
+              $.each(response.data,function (k,v) {
+                $('#kel').append(""+
+                  "<option value='"+v.id+"'>"+v.name+"</option>"
+                );
+              });
+            }
+          }
+        });
+      });
 });
     function sendmail(email){
       var _email = email;
