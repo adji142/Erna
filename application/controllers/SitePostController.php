@@ -582,6 +582,37 @@ class SitePostController extends CI_Controller
 			  	}
 			}
 		}
+		if ($tipe == 'kota_RO') {
+			$curl = curl_init();
+
+			curl_setopt_array($curl, array(
+			  CURLOPT_URL => "https://api.rajaongkir.com/starter/city",
+			  CURLOPT_RETURNTRANSFER => true,
+			  CURLOPT_ENCODING => "",
+			  CURLOPT_MAXREDIRS => 10,
+			  CURLOPT_TIMEOUT => 30,
+			  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			  CURLOPT_CUSTOMREQUEST => "GET",
+			  CURLOPT_HTTPHEADER => array(
+			    "key: 66f09fcb700162bd339a522699dd8215"
+			  ),
+			));
+
+			$response = curl_exec($curl);
+			$err = curl_error($curl);
+
+			curl_close($curl);
+
+			if ($err) {
+			  echo "cURL Error #:" . $err;
+			} else {
+			  $result = json_decode($response, true);
+			  	if ($result['rajaongkir']['status']['code'] == 200){
+			  		$data['success'] = true;
+			  		$data['data'] = $result['rajaongkir']['results'];
+			  	}
+			}
+		}
 		if ($tipe == 'kota') {
 			$kota = $this->ModelsExecuteMaster->FindData(array('province_id'=>$idaddr),'regencies');
 			$data['success'] = true;
@@ -598,5 +629,40 @@ class SitePostController extends CI_Controller
 			$data['data'] = $kota->result();
 		}
 		echo json_encode($data);
+	}
+	function SaveInfo()
+	{
+		$data = array('success' => false ,'message'=>array());
+
+		$id = $this->input->post('id');
+		$prov = $this->input->post('prov');
+		$tipe = $this->input->post('tipe');
+
+		$city_id = $this->input->post('city_id');
+		$city_name = $this->input->post('city_name');
+		$type = $this->input->post('type');
+		$postal_code = $this->input->post('postal_code');
+
+		if ($tipe == 'prov') {
+			$InsertData = array(
+				'id'		=> $id,
+				'nama'		=> $prov,
+			);
+			$exec = $this->ModelsExecuteMaster->ExecInsert($InsertData,'provrajaongkir');
+		}
+		if ($tipe == 'kota') {
+			$InsertData = array(
+				'city_id'		=> $city_id,
+				'city_name'		=> $city_name,
+				'type'		=> $type,
+				'postal_code'		=> $postal_code,
+			);
+			$exec = $this->ModelsExecuteMaster->ExecInsert($InsertData,'kotarajaongkir');
+		}
+		echo json_encode($data);
+	}
+	function cekongkir($value='')
+	{
+		# code...
 	}
 }

@@ -111,7 +111,7 @@
                                   <?php 
                                     $exec = $this->ModelsExecuteMaster->FindData(array(),'provinces');
                                     foreach ($exec->result() as $key) {
-                                      echo "<option value='".$key->id."'>".$key->name."</option>";
+                                      echo "<option value='".$key->id."|".$key->id_RO."'>".$key->name."</option>";
                                     }
                                   ?>
                                 </select>

@@ -5,6 +5,9 @@ $(function () {
   var globalID;
   var xpostid;
   var global_User;
+
+  var cekongkir_provinsi = '';
+  var cekongkir_kota = '';
     $.ajaxSetup({
         beforeSend:function(jqXHR, Obj){
             var value = "; " + document.cookie;
@@ -75,7 +78,7 @@ $(function () {
       // ChangeUser(anonimuser,userid);
 
         // var idaddr = 0;
-        // var link = 'prov';
+        // var link = 'kota_RO';
 
         // $.ajax({
         //   type: "post",
@@ -84,12 +87,18 @@ $(function () {
         //   dataType: "json",
         //   success: function (response) {
         //     if(response.success == true){
-        //       $('#Provinsi').empty();
-        //       $('#Provinsi').append("<option value='0'>Pilih Provinsi</option>");
+        //     //   $('#Provinsi').empty();
+        //     //   $('#Provinsi').append("<option value='0'>Pilih Provinsi</option>");
         //       $.each(response.data,function (k,v) {
-        //         $('#Provinsi').append(""+
-        //           "<option value='"+v.province_id+"'>"+v.province+"</option>"
-        //         );
+        //         if (link == 'prov') {
+        //           SaveProvRajaONgkir(v.province_id,v.province);
+        //         }
+        //         else{
+        //           SaveKotaRajaONgkir(v.city_id,v.city_name,v.type,v.postal_code);
+        //         }
+        //         // $('#Provinsi').append(""+
+        //         //   "<option value='"+v.province_id+"'>"+v.province+"</option>"
+        //         // );
         //       });
         //     }
         //   }
@@ -379,6 +388,13 @@ $(function () {
         var idaddr = $('#Provinsi').val();
         var link = 'kota';
 
+        var exploded = idaddr.split('|');
+
+        // var x = exploded[1];
+        cekongkir_provinsi = exploded[1];
+        idaddr = exploded[0];
+
+
         $.ajax({
           type: "post",
           url: "<?=base_url()?>SitePostController/GetInfoAddr",
@@ -389,7 +405,7 @@ $(function () {
               $('#kota').empty();
               $.each(response.data,function (k,v) {
                 $('#kota').append(""+
-                  "<option value='"+v.id+"'>"+v.name+"</option>"
+                  "<option value='"+v.id+"|"+v.id_RO+"'>"+v.name+"</option>"
                 );
               });
             }
@@ -400,6 +416,11 @@ $(function () {
       $('#kota').change(function () {
         var idaddr = $('#kota').val();
         var link = 'kec';
+
+        var exploded = idaddr.split('|');
+
+        cekongkir_kota = exploded[1];
+        idaddr = exploded[0];
 
         $.ajax({
           type: "post",
@@ -438,6 +459,9 @@ $(function () {
             }
           }
         });
+      });
+      $('#kel').change(function () {
+        
       });
 });
     function sendmail(email){
@@ -850,5 +874,39 @@ $(function () {
     $('#idaddcart').val(id);
     $('#JmlOrder').val(qtyorder);
     $('#addqty-modal').modal('show');
+  }
+  function SaveProvRajaONgkir(id,prov) {
+    var tipe = 'prov';
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/SaveInfo",
+      data: {id:id,prov:prov,tipe:tipe},
+      dataType: "json",
+      success:function (response) {
+        if (response.success == true) {
+          console.log('done');
+        }
+        else{
+          console.log('fail');
+        }
+      }
+    });
+  }
+  function SaveKotaRajaONgkir(city_id,city_name,type,postal_code) {
+    var tipe = 'kota';
+    $.ajax({
+      type: "post",
+      url: "<?=base_url()?>SitePostController/SaveInfo",
+      data: {city_id:city_id,city_name:city_name,type:type,postal_code:postal_code,tipe:tipe},
+      dataType: "json",
+      success:function (response) {
+        if (response.success == true) {
+          console.log('done');
+        }
+        else{
+          console.log('fail');
+        }
+      }
+    });
   }
 </script>
