@@ -403,6 +403,9 @@ $(function () {
           success: function (response) {
             if(response.success == true){
               $('#kota').empty();
+              $('#kota').append(""+
+                "<option value='0'>Pilih Kota</option>"
+              );
               $.each(response.data,function (k,v) {
                 $('#kota').append(""+
                   "<option value='"+v.id+"|"+v.id_RO+"'>"+v.name+"</option>"
@@ -430,6 +433,9 @@ $(function () {
           success: function (response) {
             if(response.success == true){
               $('#kec').empty();
+              $('#kec').append(""+
+                "<option value='0'>Pilih Kecamatan</option>"
+              );
               $.each(response.data,function (k,v) {
                 $('#kec').append(""+
                   "<option value='"+v.id+"'>"+v.name+"</option>"
@@ -451,6 +457,9 @@ $(function () {
           success: function (response) {
             if(response.success == true){
               $('#kel').empty();
+              $('#kel').append(""+
+                "<option value='0'>Pilih Kelurahan</option>"
+              );
               $.each(response.data,function (k,v) {
                 $('#kel').append(""+
                   "<option value='"+v.id+"'>"+v.name+"</option>"
@@ -460,8 +469,51 @@ $(function () {
           }
         });
       });
-      $('#kel').change(function () {
-        
+      $('#jasaxpdc').change(function () {
+        var xpdc = $('#jasaxpdc').val();
+        $.ajax({
+          type: "post",
+          url: "<?=base_url()?>SitePostController/cekongkir",
+          data: {cekongkir_provinsi:cekongkir_provinsi,cekongkir_kota:cekongkir_kota,xpdc:xpdc},
+          dataType: "json",
+          success: function (response) {
+            if(response.success == true){
+              $('#cekongkir_TableInfo').empty();
+              $('#det_ship').empty();
+              // $.each(response.origin_det,function (k,v) {
+                $('#det_ship').append("<strong>Dari:<br></strong>"+response.origin_det.city_name+" ,"+response.origin_det.province+"<br>");
+              // });
+              // $.each(response.dest_det,function (k,v) {
+                $('#det_ship').append("<strong>ke:<br></strong>"+response.dest_det.city_name+" ,"+response.dest_det.province+"<br>");
+              // });
+              var i;
+              for (i =0; i< response.data.length ;i++) {
+                // console.log(response.data[i]);
+                $('#cekongkir_InfoExp').empty();
+                $('#cekongkir_InfoExp').append("<center><h3>"+response.data[i].name+"</h3></center>");
+                var j;
+                for (j =0;j< response.data[i]['costs'].length;j++) {
+                  // console.log(response.data[i]['costs'][j]);
+                  $('#cekongkir_TableInfo').append(""+
+                    "<option value='"+response.data[i]['costs'][j].service+"'>"+response.data[i]['costs'][j].service+" | "+response.data[i]['costs'][j].description+"</option>"
+                    );
+                  // info service
+                  var k;
+                  for (k=0;k< response.data[i]['costs'][j]['cost'].length;k++) {
+                    // console.log(response.data[i]['costs'][j]['cost'][k].value);
+                    // info harga
+                  }
+
+                }
+              }
+              // $.each(response.data,function (k,v) {
+              //   $.each(v['costs'][0],function (x,y) {
+              //     console.log(y);
+              //   });
+              // });
+            }
+          }
+        });
       });
 });
     function sendmail(email){

@@ -661,8 +661,50 @@ class SitePostController extends CI_Controller
 		}
 		echo json_encode($data);
 	}
-	function cekongkir($value='')
+	function cekongkir()
 	{
-		# code...
+		$data = array('success' => false ,'message'=>array(),'origin_det'=>array(),'dest_det'=>array(),'data'=>array());
+
+		$cekongkir_provinsi = $this->input->post('cekongkir_provinsi');
+		$destination = $this->input->post('cekongkir_kota');
+		$xpdc = $this->input->post('xpdc');
+		$user_id = $this->session->userdata('userid');
+
+		// get berat
+		$berat = $this->ModelsPostProduct->getberat($user_id)->row()->Weight;
+		// var_dump(ROUND($berat);
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "POST",
+		  CURLOPT_POSTFIELDS => "origin=445&destination=".$destination."&weight=".$berat."&courier=".$xpdc,
+		  CURLOPT_HTTPHEADER => array(
+		    "content-type: application/x-www-form-urlencoded",
+		    "key: 66f09fcb700162bd339a522699dd8215"
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+			$result = json_decode($response, true);
+		  if ($result['rajaongkir']['status']['code'] == 200){
+		  	$data['success'] = true;
+		  	$data['data'] = $result['rajaongkir']['results'];
+		  	$data['origin_det'] = $result['rajaongkir']['origin_details'];
+		  	$data['dest_det'] = $result['rajaongkir']['destination_details'];
+		  }
+		}
+		echo json_encode($data);
 	}
 }

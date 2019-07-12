@@ -150,24 +150,37 @@
                             </div>
                           </div>
                           <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                               <div class="aa-checkout-single-bill">
-                                <select id="xpdc" name="xpdc">
+                                <select id="jasaxpdc" name="jasaxpdc">
                                   <option value="0">Pilih Jasa Pengiriman</option>
                                   <?php 
                                     $exec = $this->ModelsExecuteMaster->FindData(array(),'masterxpdc');
                                     foreach ($exec->result() as $key) {
-                                      echo "<option value='".$key->id."'>".$key->xpdccode." | ".$key->xpdcname."</option>";
+                                      echo "<option value='".$key->xpdccode."'>".$key->xpdcname."</option>";
                                     }
                                   ?>
                                 </select>
                               </div>                             
-                            </div>
-                            <div class="col-md-6">
+                            </div>                         
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="Estimasi Ongkir*" readonly="">
-                              </div>
-                            </div>                            
+                                <div id="cekongkir_InfoExp"></div>
+                              </div>                             
+                            </div>                         
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="aa-checkout-single-bill">
+                                <div id="det_ship"></div>
+                                <select id="cekongkir_TableInfo" name="cekongkir_TableInfo">
+                                  <option value="0">Pilih Service Pengiriman</option>
+                                  ?>
+                                </select>
+                              </div>                             
+                            </div>                         
                           </div>
                         </div>
                       </div>
@@ -230,6 +243,11 @@
                               <th>Discount</th>
                               <td></td>
                               <td>".number_format($exec->grosprice - $exec->pricenet)."</td>
+                            </tr>
+                            <tr>
+                              <th>Ongkir</th>
+                              <td></td>
+                              <td><div id = 'ongkir_'></td>
                             </tr>
                             <tr>
                               <th>Total</th>
