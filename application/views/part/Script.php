@@ -487,6 +487,9 @@ $(function () {
                 $('#det_ship').append("<strong>ke:<br></strong>"+response.dest_det.city_name+" ,"+response.dest_det.province+"<br>");
               // });
               var i;
+              $('#cekongkir_TableInfo').append(""+
+                "<option value='0'>Pilih Service Pengiriman</option>"
+              );
               for (i =0; i< response.data.length ;i++) {
                 // console.log(response.data[i]);
                 $('#cekongkir_InfoExp').empty();
@@ -494,13 +497,16 @@ $(function () {
                 var j;
                 for (j =0;j< response.data[i]['costs'].length;j++) {
                   // console.log(response.data[i]['costs'][j]);
-                  $('#cekongkir_TableInfo').append(""+
-                    "<option value='"+response.data[i]['costs'][j].service+"'>"+response.data[i]['costs'][j].service+" | "+response.data[i]['costs'][j].description+"</option>"
-                    );
+                  // $('#cekongkir_TableInfo').append(""+
+                  //   "<option value='"+response.data[i]['costs'][j].service+"|'>"+response.data[i]['costs'][j].service+" | "+response.data[i]['costs'][j].description+"</option>"
+                  //   );
                   // info service
                   var k;
                   for (k=0;k< response.data[i]['costs'][j]['cost'].length;k++) {
                     // console.log(response.data[i]['costs'][j]['cost'][k].value);
+                    $('#cekongkir_TableInfo').append(""+
+                    "<option value='"+response.data[i]['costs'][j].service+"|"+response.data[i]['costs'][j]['cost'][k].value+"'>"+response.data[i]['costs'][j].service+" | "+response.data[i]['costs'][j].description+" | "+formatNumber(response.data[i]['costs'][j]['cost'][k].value)+"</option>"
+                    );
                     // info harga
                   }
 
@@ -514,6 +520,31 @@ $(function () {
             }
           }
         });
+      });
+
+      $('#cekongkir_TableInfo').change(function () {
+        var srv = $('#cekongkir_TableInfo').val();
+
+        var exploded = srv.split('|');
+
+        var jnssrv = exploded[0];
+        var value = exploded[1];
+        
+        alert(jnssrv+"-"+value);
+        if (value > 0 && jnssrv != '') {
+          $('#ongkir_').empty();
+          $('#ongkir_').append(formatNumber(value));
+          // alert($('#grandtotal').val());
+          var gt = $('#grandtotal').val();
+
+          $('#grandtotallabel').empty();
+          $('#grandtotal').val('0');
+          alert($('#grandtotal').val());
+          // set value
+          $('#grandtotal').val(parseInt(gt)+parseInt(value));
+          $('#grandtotallabel').append(formatNumber(parseInt(gt)+parseInt(value)));
+          alert($('#grandtotal').val());
+        }
       });
 });
     function sendmail(email){

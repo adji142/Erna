@@ -252,7 +252,7 @@
                             <tr>
                               <th>Total</th>
                               <td></td>
-                              <td>".number_format($exec->pricenet)."</td>
+                              <td> <input type = 'hidden' id ='grandtotal' value = ".$exec->pricenet."><div id = 'grandtotallabel'>".number_format($exec->pricenet)."</div></td>
                             </tr>
                           ";
                         ?>
