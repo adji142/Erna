@@ -7,7 +7,6 @@
      <div class="row">
        <div class="col-md-12">
         <div class="checkout-area">
-          <form action="">
             <div class="row">
               <div class="col-md-8">
                 <div class="checkout-left">
@@ -62,6 +61,9 @@
                       </div>
                     </div>
                     <!-- Billing Details -->
+                    <?php
+                      $memberinfo = $this->ModelsPostProduct->GetMemberInfo($user_id);
+                    ?>
                     <div class="panel panel-default aa-checkout-billaddress">
                       <div class="panel-heading">
                         <h4 class="panel-title">
@@ -73,33 +75,28 @@
                       <div id="collapseThree" class="panel-collapse">
                         <div class="panel-body">
                           <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="First Name*">
+                                <input type="text" placeholder="Nama Penerima*" id="recivername" value="<?php echo $memberinfo->row()->namamember; ?>">
                               </div>                             
-                            </div>
-                            <div class="col-md-6">
-                              <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="Last Name*">
-                              </div>
                             </div>
                           </div> 
                           <div class="row">
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="email" placeholder="Email Address*">
+                                <input type="email" placeholder="Email Address*" id="reciveremail" value="<?php echo $memberinfo->row()->Email; ?>">
                               </div>                             
                             </div>
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="tel" placeholder="Phone*">
+                                <input type="tel" placeholder="Phone*" id="reciverphone" value="<?php echo $memberinfo->row()->Phone; ?>">
                               </div>
                             </div>
                           </div> 
                           <div class="row">
                             <div class="col-md-12">
                               <div class="aa-checkout-single-bill">
-                                <textarea cols="8" rows="3">Address*</textarea>
+                                <textarea cols="8" rows="3" id="reciveraddr"><?php echo $memberinfo->row()->Alamat; ?></textarea>
                               </div>                             
                             </div>                            
                           </div>   
@@ -145,7 +142,7 @@
                             </div>
                             <div class="col-md-6">
                               <div class="aa-checkout-single-bill">
-                                <input type="text" placeholder="Postcode / ZIP*">
+                                <input type="text" placeholder="Postcode / ZIP*" id="kodepos">
                               </div>
                             </div>
                           </div>
@@ -182,6 +179,13 @@
                               </div>                             
                             </div>                         
                           </div>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="aa-checkout-single-bill">
+                                <textarea cols="8" rows="3" id="otherremarks"></textarea>
+                              </div>                             
+                            </div>                            
+                          </div> 
                         </div>
                       </div>
                     </div>
@@ -261,15 +265,14 @@
                   </div>
                   <h4>Payment Method</h4>
                   <div class="aa-payment-method">                    
-                    <label for="cashdelivery"><input type="radio" id="cashdelivery" name="optionsRadios"> Cash on Delivery </label>
-                    <label for="paypal"><input type="radio" id="paypal" name="optionsRadios" checked> Via Paypal </label>
+                    <!-- <label for="cashdelivery"><input type="radio" id="cashdelivery" name="optionsRadios"> Cash on Delivery </label> -->
+                    <label for="paypal"><input type="radio" id="paypal" name="optionsRadios" checked> Via Transfer </label>
                     <img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" border="0" alt="PayPal Acceptance Mark">    
-                    <input type="submit" value="Place Order" class="aa-browse-btn">                
+                    <button class="aa-browse-btn" id="proses_pesanan"> Proses Pesanan </button>
                   </div>
                 </div>
               </div>
             </div>
-          </form>
          </div>
        </div>
      </div>
@@ -281,3 +284,57 @@
   require_once(APPPATH."views/part/Footer.php");
   require_once(APPPATH."views/part/Script.php");
 ?>
+
+<script type="text/javascript">
+  $('#proses_pesanan').click(function () {
+    var penerima = $('#recivername').val();
+    var email = $('#reciveremail').val();
+    var phone = $('#reciverphone').val();
+    var alamat = $('#reciveraddr').val();
+    var Provinsi = $('#Provinsi').val().split('|');
+    var Kota = $('#kota').val().split('|');
+    var kecamatan = $('#kec').val();
+    var Kelurahan= $('#kel').val();
+    var postcode = $('#kodepos').val();
+    var xpdc = $('#jasaxpdc').val();
+    var Service = $('#cekongkir_TableInfo').val().split('|');
+    var otherremarks = $('#otherremarks').val();
+
+    var fixprovinsi = Provinsi[0];
+    var fixkota = Kota[0];
+    var fixservice = Service[0];
+    var fixcost = Service[1];
+
+    if (penerima != '' && email != '' && phone != '' && alamat != '' && fixprovinsi != '' && fixkota != '' && kecamatan != '' && Kelurahan != '' && xpdc != '' && fixservice != '' && fixcost > 0) {
+      // alert('OKE');
+      // Cek available member
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/PlaceOrder",
+        data: {penerima:penerima,email:email,phone:phone,alamat:alamat,fixprovinsi:fixprovinsi,fixkota:fixkota,kecamatan:kecamatan,Kelurahan:Kelurahan,postcode:postcode,xpdc:xpdc,fixservice:fixservice,fixcost:fixcost},
+        dataType: "json",
+        success:function (response) {
+          console.log(response.success);
+          if (response.success == true) {
+            location.replace("<?=base_url()?>finish");
+          }
+          else{
+            alert('else');
+            Swal.fire({
+              type: 'error',
+              title: 'Woops...',
+              text: response.message,
+            });
+          }
+        }
+      });
+    }
+    else{
+      Swal.fire({
+        type: 'error',
+        title: 'Woops...',
+        text: 'Data Tidak lengkap, silahkan periksa Kembali',
+      });
+    }
+  });
+</script>

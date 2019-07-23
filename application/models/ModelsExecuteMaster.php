@@ -13,12 +13,30 @@ class ModelsExecuteMaster extends CI_Model
 	}
 	function ExecUpdate($data,$where,$table)
 	{
+		// $this->db->trans_begin();
         $this->db->where($where);
         return $this->db->update($table,$data);
+  //       if ($this->db->trans_status() === FALSE)
+		// {
+		//     $this->db->trans_rollback();
+		// }
+		// else
+		// {
+		// 	$this->db->trans_commit();
+		// }
 	}
 	function ExecInsert($data,$table)
 	{
+		// $this->db->trans_begin();
 		return $this->db->insert($table,$data);
+		// if ($this->db->trans_status() === FALSE)
+		// {
+		//     $this->db->trans_rollback();
+		// }
+		// else
+		// {
+		// 	$this->db->trans_commit();
+		// }
 	}
 	function FindData($where,$table){
 		$this->db->where($where);
@@ -78,6 +96,14 @@ class ModelsExecuteMaster extends CI_Model
 	{
 		$this->db->select_sum($field);
 		$this->db->where($where);
+		return $this->db->get($table);
+	}
+	function lastid($table,$memberid)
+	{
+		$data = 'select COALESCE(max(id)) id From $table';
+		if($memberid != ''){
+			$this->db->where('memberid',$memberid);
+		}
 		return $this->db->get($table);
 	}
 }

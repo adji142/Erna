@@ -92,4 +92,22 @@ class ModelsPostProduct extends CI_Model
 		";
 		return $this->db->query($data);
 	}
+	function GetMemberInfo($user)
+	{
+		$data = "SELECT 
+					b.namamember,COALESCE(b.email,a.email) Email,COALESCE(b.notlp,a.phone) Phone,
+					COALESCE(b.Alamat,'Alamat *') Alamat
+				FROM users a
+				LEFT JOIN mastermember b on b.userid = a.Id 
+				WHERE a.id = '$user'
+				";
+		return $this->db->query($data);
+	}
+	function cekMember_Count()
+	{
+		$this->db->where('tglpasif',null);
+		$this->db->order_by('minimumspend','DESC');
+		return $this->db->get('mastersettingmember');
+
+	}
 }

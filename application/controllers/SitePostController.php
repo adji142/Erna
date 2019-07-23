@@ -707,4 +707,107 @@ class SitePostController extends CI_Controller
 		}
 		echo json_encode($data);
 	}
+	function PlaceOrder()
+	{
+		$data = array('success' => false ,'message'=>array());
+		// Declaring variable
+		$penerima = $this->input->post('penerima');
+		$email = $this->input->post('email');
+		$phone = $this->input->post('phone');
+		$alamat = $this->input->post('alamat');
+		$fixprovinsi = $this->input->post('fixprovinsi');
+		$fixkota = $this->input->post('fixkota');
+		$kecamatan = $this->input->post('kecamatan');
+		$Kelurahan = $this->input->post('Kelurahan');
+		$postcode = $this->input->post('postcode');
+		$xpdc = $this->input->post('xpdc');
+		$Service = $this->input->post('Service');
+		$otherremarks = $this->input->post('otherremarks');
+		$user_id = $this->session->userdata('userid');
+		$notrx = date('Y')."".date('m')."".date('d')."".rand();
+		$fixservice = $this->input->post('fixservice');
+		$fixcost = $this->input->post('fixcost');
+		$idsetingmember = '';
+		$memberid = '';
+		$headerid='';
+		//public variable
+
+// get last member status from cart
+		$this->db->select_max('idsetingmember');
+		$this->db->where('userid',$user_id);
+		$this->db->where('statuscart',1);
+		$getmemberid = $this->db->get('carttable')->row();
+
+		$idsetingmember = $getmemberid->idsetingmember;
+//end get last member status from cart
+
+// get jumlah member registerd
+		$jml_Member = $this->ModelsExecuteMaster->FindData(array('kotakab'=>$fixkota,'verifymember'=>1,'jenismemberid'=>$idsetingmember),'mastermember');
+		$quota = $this->ModelsExecuteMaster->FindData(array('id'=>$idsetingmember),'mastersettingmember');
+
+		if ($jml_Member->num_rows() <= $quota->row()->quota) {
+			$cekexist = $this->ModelsExecuteMaster->FindData(array('userid'=>$user_id),'mastermember');
+			if ($cekexist->num_rows() == 0) {
+				$datamember = array(
+					'userid'		=> $user_id,
+					'jenismemberid'	=> $idsetingmember,
+					'namamember'	=> $penerima,
+					'email'			=> $email,
+					'notlp'			=> $phone,
+					'Alamat'		=> $alamat,
+					'propinsi'		=> $fixprovinsi,
+					'kotakab'		=> $fixkota,
+					'kelurahan'		=> $Kelurahan,
+					'kecamatan'		=> $kecamatan,
+					'nopos'			=> $postcode,
+					'verifymember'	=> 1,
+					'membersince'	=> date("Y-m-d"),
+				);
+				$exec = $this->db->insert('mastermember',$datamember);
+				$memberid = $this->db->insert_id();
+			}
+			else{
+				$memberid = $cekexist->row()->Id;
+			}
+			$do = array(
+				'memberid'		=> $memberid,
+				'nomerorder'	=> $notrx,
+				'tglorder'		=> date("Y-m-d"),
+				'xpdc'			=> $xpdc,
+				'service'		=> $fixservice,
+				'statusorder'	=> 0,
+			);
+			$execdo = $this->db->insert('deliveryorder',$do);//$this->ModelsExecuteMaster->ExecInsert($do,'deliveryorder');
+			$headerid = $this->db->insert_id();
+			if ($execdo) {
+				$post = $this->ModelsPostProduct->getCart($user_id)->result();
+				foreach ($post as $cart) {
+					$dod = array(
+						'headerid'	=> $headerid,
+						'postid'	=> $cart->postid,
+						'qtyorder'	=> $cart->qtyorder,
+						'gros'		=> $cart->price * $cart->qtyorder,
+						'discount'	=> ($cart->price * $cart->qtyorder) - $cart->pricenet,
+						'ongkir'	=> $fixcost,
+					);
+					$execdod = $this->ModelsExecuteMaster->ExecInsert($dod,'deliveryorderdetail');
+					if ($execdod) {
+						$updatecart = $this->ModelsExecuteMaster->ExecUpdate(array('statuscart'=>0),array('id'=>$cart->id),'carttable');
+						if ($updatecart) {
+							$data['success'] = true;
+						}
+					}
+				}
+				// var_dump($dod);
+			}
+			else{
+				$data['message'] = 'Gagal Menyimpan Order';
+			}
+		}
+		else{
+			$data['message'] = 'Quota Member '.$quota->row()->namagrade.' Sudah Penuh, sistem akan mengkalkulasi Ulang dengan Harga Member yang tersedia di bawah nya';
+		}
+//end get jumlah member registerd
+		echo json_encode($data);
+	}
 }

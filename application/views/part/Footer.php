@@ -201,5 +201,8 @@
   <!-- <script src="<?php echo base_url();?>front/jquery/js/jquery.dataTables.min.js"></script> -->
   <script src="<?php echo base_url();?>Assets/datatables.net/js/jquery.dataTables.min.js"></script>
   <script src="<?php echo base_url();?>Assets/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+  
+  <script src="<?php echo base_url();?>Assets/js/passwordscheck.js"></script> 
+  <script src="<?php echo base_url();?>Assets/js/icheck.min.js"></script>
   </body>
 </html>

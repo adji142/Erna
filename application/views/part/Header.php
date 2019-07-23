@@ -74,6 +74,48 @@
       margin: 0; 
   }
 
+  .overlay {
+    /* opacity: 0; */
+    position: absolute;
+    top: 20px;
+    bottom: 0;
+    height: 150px;
+    width: 150px;
+    opacity: 0;
+    transition: .5s ease;
+    background:rgba(46, 168, 255, 0.5);
+    border-radius:50%;
+    transform: translate(40%, -0%);
+  }
+
+  .layover:hover .overlay {
+    opacity: 1;
+  }
+
+  .text a {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .inner {
+    /* width: 100px;
+    height: 100px;
+    background: green; */
+    
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-15%, 40%);
+  }
+  .active, .a:hover {
+    color: #ff6666;
+  }
 </style>
 <?php
   $confirmed = $this->session->userdata('confirmed');
@@ -195,13 +237,15 @@
     
     <!-- datatable -->
     <link rel="stylesheet" href="<?php echo base_url();?>Assets/datatables.net-bs/css/dataTables.bootstrap.min.css" />
+
+    <link href="<?php echo base_url();?>Assets/css/Radio.css" rel="stylesheet">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-  
+    <!-- <link rel="stylesheet" href="<?php base_url();?>/Assets/css/customtab/css/style.css"> -->
 
   </head>
   <body> 

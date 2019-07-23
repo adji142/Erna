@@ -11,6 +11,7 @@ class Id extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('GlobalVar');
+		$this->load->model('SideBarModels');
 		$this->load->model('ModelsExecuteMaster');
 		$this->load->library('user_agent');
 		$this->load->model('ModelsPostProduct');
@@ -93,5 +94,9 @@ class Id extends CI_Controller
 	function CheckOut()
 	{
 		$this->load->view('Checkout');
+	}
+	function finish()
+	{
+		$this->load->view('finishorder');
 	}
 }

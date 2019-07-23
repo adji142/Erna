@@ -1,5 +1,21 @@
 <script type="text/javascript">
 $(function () {
+    //iCheck for checkbox and radio inputs
+    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+      checkboxClass: 'icheckbox_minimal-blue',
+      radioClass   : 'iradio_minimal-blue'
+    })
+    //Red color scheme for iCheck
+    $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+      checkboxClass: 'icheckbox_minimal-red',
+      radioClass   : 'iradio_minimal-red'
+    })
+    //Flat red color scheme for iCheck
+    $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+      checkboxClass: 'icheckbox_flat-green',
+      radioClass   : 'iradio_flat-green'
+    })
+
 	var form_mode = '';
 	var EmailVar = '';
   var globalID;
@@ -22,6 +38,20 @@ $(function () {
       'searching'   : false,
       'ordering'    : false,
       'autoWidth'   : true
+    });
+    $("#selectedFile").change(function(){
+      loadImage(this);
+      var me = $(this);
+      alert(me);
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>Profile/ProfilePage/changeProfilePicture",
+        data: me.serialize(),
+        dataType: "json",
+        success: function (response) {
+          alert('');
+        }
+      });
     });
     $('#login').click(function () {
     	$('#login-modal').modal('show');
@@ -74,36 +104,7 @@ $(function () {
       loadPagination(0,'',globalID);
 
       ShowCart(fixid);
-      // $('#count_cart').val('5');
-      // ChangeUser(anonimuser,userid);
-
-        // var idaddr = 0;
-        // var link = 'kota_RO';
-
-        // $.ajax({
-        //   type: "post",
-        //   url: "<?=base_url()?>SitePostController/GetInfoAddr",
-        //   data: {link:link,idaddr:idaddr},
-        //   dataType: "json",
-        //   success: function (response) {
-        //     if(response.success == true){
-        //     //   $('#Provinsi').empty();
-        //     //   $('#Provinsi').append("<option value='0'>Pilih Provinsi</option>");
-        //       $.each(response.data,function (k,v) {
-        //         if (link == 'prov') {
-        //           SaveProvRajaONgkir(v.province_id,v.province);
-        //         }
-        //         else{
-        //           SaveKotaRajaONgkir(v.city_id,v.city_name,v.type,v.postal_code);
-        //         }
-        //         // $('#Provinsi').append(""+
-        //         //   "<option value='"+v.province_id+"'>"+v.province+"</option>"
-        //         // );
-        //       });
-        //     }
-        //   }
-        // });
-
+      $('[data-toggle="tooltip"]').tooltip();
       });
 
     $('#goReg').submit(function (e) {
@@ -530,22 +531,52 @@ $(function () {
         var jnssrv = exploded[0];
         var value = exploded[1];
         
-        alert(jnssrv+"-"+value);
         if (value > 0 && jnssrv != '') {
           $('#ongkir_').empty();
           $('#ongkir_').append(formatNumber(value));
-          // alert($('#grandtotal').val());
           var gt = $('#grandtotal').val();
-
           $('#grandtotallabel').empty();
-          $('#grandtotal').val('0');
-          alert($('#grandtotal').val());
           // set value
-          $('#grandtotal').val(parseInt(gt)+parseInt(value));
           $('#grandtotallabel').append(formatNumber(parseInt(gt)+parseInt(value)));
-          alert($('#grandtotal').val());
         }
       });
+
+      $('#SaveProfile').submit(function (e) {
+        $('#btn_save_profile').text('Tunggu Sebentar...');
+        $('#btn_save_profile').attr('disabled',true);
+
+        e.preventDefault();
+        var me = $(this);
+
+        $.ajax({
+          type  : 'post',
+          url   : '<?=base_url()?>ProfileController/UpdateProfile',
+          data  : me.serialize(),
+          dataType : 'json',
+          success: function (response) {
+            if(response.success == true){
+              Swal.fire({
+                    type: 'success',
+                    title: 'Selamat !!!',
+                    text : 'Data berhasil Di Update'
+                  }).then((result)=>{
+                    location.reload();
+                  });
+            }
+            else{
+              Swal.fire({
+                  type: 'error',
+                  title: 'Woops...',
+                  text: 'Undefind error',
+                  footer: response.message,
+                }).then((result)=>{
+                  location.reload();
+                });
+            }
+          }
+        });
+    });
+
 });
     function sendmail(email){
       var _email = email;
@@ -991,5 +1022,29 @@ $(function () {
         }
       }
     });
+  }
+  function test(asd) {
+    alert(asd);
+  }
+  function loadImage(input){
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#ImgProfile').attr('src', e.target.result);
+            // .croppie({
+            //   enableExif: false,
+            //     viewport: {
+            //         width: 200,
+            //         height: 200,
+            //         type: 'circle'
+            //     },
+            //     boundary: {
+            //         width: 200,
+            //         height: 200
+            //     }
+            // });
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
   }
 </script>
