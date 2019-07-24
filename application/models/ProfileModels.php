@@ -13,7 +13,7 @@ class ProfileModels extends CI_Model
 	}
 	function SumOrder($ORDRID)
 	{
-		$data = "SELECT SUM(qtyorder) Qty,SUM(gros) gros,SUM(discount) discount,SUM(ongkir) ongkir,SUM(gros+discount+ongkir) TOTAL FROM deliveryorderdetail where headerid = $ORDRID";
+		$data = "SELECT SUM(qtyorder) Qty,SUM(gros) gros,SUM(discount) discount,SUM(ongkir) ongkir,SUM(gros-discount)+ongkir TOTAL FROM deliveryorderdetail where headerid = $ORDRID group by ongkir" ;
 		return $this->db->query($data);
 	}
 }

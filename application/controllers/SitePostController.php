@@ -787,7 +787,7 @@ class SitePostController extends CI_Controller
 						'postid'	=> $cart->postid,
 						'qtyorder'	=> $cart->qtyorder,
 						'gros'		=> $cart->price * $cart->qtyorder,
-						'discount'	=> ($cart->price * $cart->qtyorder) - $cart->pricenet,
+						'discount'	=> ($cart->price * $cart->qtyorder) - ($cart->pricenet * $cart->qtyorder),
 						'ongkir'	=> $fixcost,
 					);
 					$execdod = $this->ModelsExecuteMaster->ExecInsert($dod,'deliveryorderdetail');

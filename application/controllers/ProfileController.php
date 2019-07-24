@@ -59,4 +59,25 @@ class ProfileController extends CI_Controller
 
         echo json_encode($data);
     }
+    function RekeningDetail()
+    {
+        $data = array('success' => false ,'message'=>array(),'data' =>array());
+
+        $id = $this->input->post('idrek');
+
+        $rek = $this->ModelsExecuteMaster->FindData(array('tglpasif'=>null),'masterrekening')->result();
+
+        $data['success'] = true;
+        $data['data'] = $rek;
+        echo json_encode($data);
+    }
+    function SavePayment()
+    {
+        $data = array('success' => false ,'message'=>array());
+
+        $nopembayaran = 'BKM'.rand();
+        $tglpembayaran = date("Y-m-d H:i:s");
+        $doid = $this->input->post('doid');
+        $jumlah = $this->input->post('doid');
+    }
 }

@@ -70,10 +70,10 @@ class Auth_Login extends CI_Controller
         $url = $_SERVER['HTTP_REFERER'];
         $config = Array(
         'protocol' => 'smtp',
-        'smtp_host' => 'ssl://srv57.niagahoster.com',
-        'smtp_port' => 465,
-        'smtp_user' => 'info@koprasiwanitausahamandiri.com',//'postmaster@sandbox96a59d42d16b45829acd22122c0e4fa2.mailgun.org', //isi dengan gmailmu!
-        'smtp_pass' => 'Admin123', //isi dengan password gmailmu!
+        'smtp_host' => 'in-v3.mailjet.com',//'ssl://srv57.niagahoster.com',
+        'smtp_port' => 587 ,//465,
+        'smtp_user' => '8f66723472d5c1b1200ccfa0e1e0f497',//'info@koprasiwanitausahamandiri.com',//'postmaster@sandbox96a59d42d16b45829acd22122c0e4fa2.mailgun.org', //isi dengan gmailmu!
+        'smtp_pass' => 'cbb303c9e63705c5edb938ee23572853',//'Admin123', //isi dengan password gmailmu!
         'mailtype' => 'html',
         'charset' => 'iso-8859-1',
         'wordwrap' => TRUE
