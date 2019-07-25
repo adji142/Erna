@@ -704,6 +704,9 @@ class SitePostController extends CI_Controller
 		  	$data['origin_det'] = $result['rajaongkir']['origin_details'];
 		  	$data['dest_det'] = $result['rajaongkir']['destination_details'];
 		  }
+		  else{
+		  	$data['message'] = $result['rajaongkir']['results'];
+		  }
 		}
 		echo json_encode($data);
 	}
@@ -745,7 +748,7 @@ class SitePostController extends CI_Controller
 		$jml_Member = $this->ModelsExecuteMaster->FindData(array('kotakab'=>$fixkota,'verifymember'=>1,'jenismemberid'=>$idsetingmember),'mastermember');
 		$quota = $this->ModelsExecuteMaster->FindData(array('id'=>$idsetingmember),'mastersettingmember');
 
-		if ($jml_Member->num_rows() <= $quota->row()->quota) {
+		if ($jml_Member->num_rows() < $quota->row()->quota) {
 			$cekexist = $this->ModelsExecuteMaster->FindData(array('userid'=>$user_id),'mastermember');
 			if ($cekexist->num_rows() == 0) {
 				$datamember = array(
@@ -805,9 +808,113 @@ class SitePostController extends CI_Controller
 			}
 		}
 		else{
-			$data['message'] = 'Quota Member '.$quota->row()->namagrade.' Sudah Penuh, sistem akan mengkalkulasi Ulang dengan Harga Member yang tersedia di bawah nya';
+			$data['message'] = '701 - Quota Member '.$quota->row()->namagrade.' Sudah Penuh, sistem akan mengkalkulasi Ulang dengan Harga Member yang tersedia di bawah nya';
 		}
 //end get jumlah member registerd
+		echo json_encode($data);
+	}
+	function Recalculation()
+	{
+		$data = array('success' => false ,'message'=>array());
+		// Declaring variable
+		$penerima = $this->input->post('penerima');
+		$email = $this->input->post('email');
+		$phone = $this->input->post('phone');
+		$alamat = $this->input->post('alamat');
+		$fixprovinsi = $this->input->post('fixprovinsi');
+		$fixkota = $this->input->post('fixkota');
+		$kecamatan = $this->input->post('kecamatan');
+		$Kelurahan = $this->input->post('Kelurahan');
+		$postcode = $this->input->post('postcode');
+		$xpdc = $this->input->post('xpdc');
+		$Service = $this->input->post('Service');
+		$otherremarks = $this->input->post('otherremarks');
+		$user_id = $this->session->userdata('userid');
+		$notrx = date('Y')."".date('m')."".date('d')."".rand();
+		$fixservice = $this->input->post('fixservice');
+		$fixcost = $this->input->post('fixcost');
+		$idsetingmember = '';
+		$memberid = '';
+		$headerid='';
+
+		$query = "SELECT * FROM mastersettingmember ORder by benefitdiscount DESC";
+		$excec = $this->db->query($query);
+		$pricenet = 0;
+		// var_dump($excec->result());
+		foreach ($excec->result() as $key) {
+			$quota = $this->ModelsExecuteMaster->FindData(array('id'=>$key->id),'mastersettingmember');
+			$jml_Member = $this->ModelsExecuteMaster->FindData(array('kotakab'=>$fixkota,'verifymember'=>1,'jenismemberid'=>$key->id),'mastermember');
+			if ($jml_Member->num_rows() < $key->quota) {
+				// var_dump('expression masuk ke level bawah nya');
+				$post = $this->ModelsPostProduct->getCart($user_id)->result();
+				// updateing cart
+				foreach ($post as $crt) {
+					$data_upd = array(
+						'pricenet'			=> $crt->price - ($crt->price * $key->benefitdiscount / 100),
+						'idsetingmember'	=> $key->id,
+					);
+					$this->ModelsExecuteMaster->ExecUpdate($data_upd,array('id' => $crt->id),'carttable');
+				}
+
+				$cekexist = $this->ModelsExecuteMaster->FindData(array('userid'=>$user_id),'mastermember');
+				if ($cekexist->num_rows() == 0) {
+					$datamember = array(
+						'userid'		=> $user_id,
+						'jenismemberid'	=> $key->id,
+						'namamember'	=> $penerima,
+						'email'			=> $email,
+						'notlp'			=> $phone,
+						'Alamat'		=> $alamat,
+						'propinsi'		=> $fixprovinsi,
+						'kotakab'		=> $fixkota,
+						'kelurahan'		=> $Kelurahan,
+						'kecamatan'		=> $kecamatan,
+						'nopos'			=> $postcode,
+						'verifymember'	=> 1,
+						'membersince'	=> date("Y-m-d"),
+					);
+					$exec = $this->db->insert('mastermember',$datamember);
+					$memberid = $this->db->insert_id();
+				}
+				else{
+					$memberid = $cekexist->row()->Id;
+				}
+				$do = array(
+					'memberid'		=> $memberid,
+					'nomerorder'	=> $notrx,
+					'tglorder'		=> date("Y-m-d"),
+					'xpdc'			=> $xpdc,
+					'service'		=> $fixservice,
+					'statusorder'	=> 0,
+				);
+				$execdo = $this->db->insert('deliveryorder',$do);//$this->ModelsExecuteMaster->ExecInsert($do,'deliveryorder');
+				$headerid = $this->db->insert_id();
+				if ($execdo) {
+					$post = $this->ModelsPostProduct->getCart($user_id)->result();
+					foreach ($post as $cart) {
+						$dod = array(
+							'headerid'	=> $headerid,
+							'postid'	=> $cart->postid,
+							'qtyorder'	=> $cart->qtyorder,
+							'gros'		=> $cart->price * $cart->qtyorder,
+							'discount'	=> ($cart->price * $cart->qtyorder) - ($cart->pricenet * $cart->qtyorder),
+							'ongkir'	=> $fixcost,
+						);
+						$execdod = $this->ModelsExecuteMaster->ExecInsert($dod,'deliveryorderdetail');
+						if ($execdod) {
+							$updatecart = $this->ModelsExecuteMaster->ExecUpdate(array('statuscart'=>0),array('id'=>$cart->id),'carttable');
+							if ($updatecart) {
+								$data['success'] = true;
+							}
+						}
+					}
+					// var_dump($dod);
+				}
+				else{
+					$data['message'] = 'Gagal Menyimpan Order';
+				}
+			}
+		}
 		echo json_encode($data);
 	}
 }

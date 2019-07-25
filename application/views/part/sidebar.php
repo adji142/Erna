@@ -6,14 +6,14 @@
               <div class="layover">
                 <h3>
                   <?php echo $imageprofile;?>
-                  <div class='overlay'>
+                  <!-- <div class='overlay'>
                     <div class='text'>
                     <form id="change" enctype='application/json'>
                       <input type='file' id='selectedFile' name = 'selectedFile' style='display: none;' accept="image/*"/>
                       <a href="#" id="btn_chageimage" onclick="document.getElementById('selectedFile').click();" data-toggle="tooltip" title=" Size Foto Maximal 1Mb 450px x 450px">Pilih Gambar</a>
                     </form>
                     </div>
-                  </div>
+                  </div> -->
                 </h3>
                 
               </div>

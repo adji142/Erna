@@ -75,9 +75,38 @@ class ProfileController extends CI_Controller
     {
         $data = array('success' => false ,'message'=>array());
 
-        $nopembayaran = 'BKM'.rand();
+        $nopembayaran = 'BBM'.rand();
         $tglpembayaran = date("Y-m-d H:i:s");
         $doid = $this->input->post('doid');
-        $jumlah = $this->input->post('doid');
+        $image = $this->input->post('base64');
+        $rekening = $this->input->post('rekening');
+
+        $excec = $this->ProfileModels->SumOrder($doid);
+        $jumlahtagihan = $excec->row()->TOTAL;
+
+        $datainsert = array(
+            'nopembayaran'  => $nopembayaran,
+            'tglpembayaran' => $tglpembayaran,
+            'doid'          => $doid,
+            'jumlah'        => $jumlahtagihan,
+            'image'         => 'data:image/png;base64,'.$image,
+            'rekeningid'    => $rekening,
+            'confirmed'     => 0,
+        );
+
+        $exec = $this->ModelsExecuteMaster->ExecInsert($datainsert,'pembayaran');
+        if ($exec) {
+            $update = $this->ModelsExecuteMaster->ExecUpdate(array('statusorder'=>1),array('id'=>$doid),'deliveryorder');
+            if ($update) {
+                $data['success'] = true;
+            }
+            else{
+                $data['message'] = 'Update Status Pesanan Gagal';
+            }
+        }
+        else{
+            $data['message'] = 'Pemnbayaran Gagal MOhon hubungi Customer Service';
+        }
+        echo json_encode($data);
     }
 }

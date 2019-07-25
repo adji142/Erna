@@ -319,6 +319,68 @@
             location.replace("<?=base_url()?>finish");
           }
           else{
+            var kode = response.message;
+            if (kode.substring(0,3) == '701') {
+              Swal.fire({
+                type: 'error',
+                title: 'Woops...',
+                text: response.message,
+              }).then((result)=>{
+                Recakculation();
+              });;  
+            }
+            else{
+              Swal.fire({
+                type: 'error',
+                title: 'Woops...',
+                text: response.message,
+              });
+            }
+          }
+        }
+      });
+    }
+    else{
+      Swal.fire({
+        type: 'error',
+        title: 'Woops...',
+        text: 'Data Tidak lengkap, silahkan periksa Kembali',
+      });
+    }
+  });
+  function Recakculation() {
+    var penerima = $('#recivername').val();
+    var email = $('#reciveremail').val();
+    var phone = $('#reciverphone').val();
+    var alamat = $('#reciveraddr').val();
+    var Provinsi = $('#Provinsi').val().split('|');
+    var Kota = $('#kota').val().split('|');
+    var kecamatan = $('#kec').val();
+    var Kelurahan= $('#kel').val();
+    var postcode = $('#kodepos').val();
+    var xpdc = $('#jasaxpdc').val();
+    var Service = $('#cekongkir_TableInfo').val().split('|');
+    var otherremarks = $('#otherremarks').val();
+
+    var fixprovinsi = Provinsi[0];
+    var fixkota = Kota[0];
+    var fixservice = Service[0];
+    var fixcost = Service[1];
+
+    if (penerima != '' && email != '' && phone != '' && alamat != '' && fixprovinsi != '' && fixkota != '' && kecamatan != '' && Kelurahan != '' && xpdc != '' && fixservice != '' && fixcost > 0) {
+      // alert('OKE');
+      // Cek available member
+      $.ajax({
+        type: "post",
+        url: "<?=base_url()?>SitePostController/Recalculation",
+        data: {penerima:penerima,email:email,phone:phone,alamat:alamat,fixprovinsi:fixprovinsi,fixkota:fixkota,kecamatan:kecamatan,Kelurahan:Kelurahan,postcode:postcode,xpdc:xpdc,fixservice:fixservice,fixcost:fixcost},
+        dataType: "json",
+        success:function (response) {
+          console.log(response.success);
+          if (response.success == true) {
+            location.replace("<?=base_url()?>finish");
+          }
+          else{
             alert('else');
             Swal.fire({
               type: 'error',
@@ -336,5 +398,5 @@
         text: 'Data Tidak lengkap, silahkan periksa Kembali',
       });
     }
-  });
+  }
 </script>
