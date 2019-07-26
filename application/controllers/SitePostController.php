@@ -830,7 +830,7 @@ class SitePostController extends CI_Controller
 		$Service = $this->input->post('Service');
 		$otherremarks = $this->input->post('otherremarks');
 		$user_id = $this->session->userdata('userid');
-		$notrx = date('Y')."".date('m')."".date('d')."".rand();
+		$notrx = '1'.date('Y')."".date('m')."".date('d')."".rand();
 		$fixservice = $this->input->post('fixservice');
 		$fixcost = $this->input->post('fixcost');
 		$idsetingmember = '';
@@ -886,6 +886,14 @@ class SitePostController extends CI_Controller
 					'xpdc'			=> $xpdc,
 					'service'		=> $fixservice,
 					'statusorder'	=> 0,
+					'alamatkirim'	=> $alamat,
+					'provinsi'		=> $fixprovinsi,
+					'kota'			=> $fixkota,
+					'kecamatan'		=> $kecamatan,
+					'kelurahan'		=> $Kelurahan,
+					'kodepos'		=> $kodepos,
+					'tlp'			=> $phone,
+					'penerima'		=> $penerima,
 				);
 				$execdo = $this->db->insert('deliveryorder',$do);//$this->ModelsExecuteMaster->ExecInsert($do,'deliveryorder');
 				$headerid = $this->db->insert_id();

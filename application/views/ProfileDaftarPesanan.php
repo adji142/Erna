@@ -57,6 +57,7 @@ $active = array_pop($uriSegments).'/'.$lastUriSegment;
                           }
                           elseif ($head->statusorder == 4) {
                             $Status = 'Pesanan Di Kirim';
+                            $aksi = '<a data-toggle="tab" class="btn btn-mini btn-danger" href="#tab2">Cek Resi</a>';
                           }
                           elseif ($head->statusorder == 5) {
                             $Status = 'Pesanan Selesai';
@@ -78,7 +79,50 @@ $active = array_pop($uriSegments).'/'.$lastUriSegment;
                     </table>
                 </div>
                 <div id="tab2" class="tab-pane">
-                  pengiriman
+                  <center>
+                        <p><h2>Pesanan Di Kirim</h2></p>
+                    </center>
+                    <!-- Baca sumary  -->
+                    <table class="table table-responsive">
+                      <thead>
+                        <tr>
+                          <th>No. Order</th>
+                          <th>Tanggal Order</th>
+                          <th>Kurir</th>
+                          <th>Service</th>
+                          <th>No Resi</th>
+                        </tr>
+                      </thead>
+                      <?php
+                        $query = "
+                          SELECT 
+                            b.nomerorder,
+                            b.tglorder,
+                            c.nopengiriman,
+                            c.tglpengiriman,
+                            c.nomerresi,
+                            b.xpdc,
+                            b.service,
+                            b.id doid
+                          FROM deliveryorderdetail a
+                          LEFT JOIN deliveryorder b on a.headerid = b.id
+                          LEFT JOIN pengiriman c on c.doid = b.id
+                          WHERE b.statusorder >=3
+                        ";
+                        $getquery = $this->db->query($query);
+
+                        foreach ($getquery->result() as $x) {
+                          echo "<tr>
+                                  <td>".$x->nomerorder."</td>
+                                  <td>".date_format(date_create($x->tglorder),'d-m-Y')."</td>
+                                  <td>".$x->xpdc."</td>
+                                  <td>".$x->service."</td>
+                                  <td>".$x->nomerresi."</td>
+                                </tr>
+                              ";
+                        }
+                      ?>
+                    </table>
                 </div>
                 <div id="tab3" class="tab-pane">
                   Selesai
