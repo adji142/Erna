@@ -109,4 +109,44 @@ class ProfileController extends CI_Controller
         }
         echo json_encode($data);
     }
+    function Selesai()
+    {
+        $data = array('success' => false ,'message'=>array());
+        $doid = $this->input->post('doid');
+
+        $update = $this->ModelsExecuteMaster->ExecUpdate(array('statusorder'=>5),array('id'=>$doid),'deliveryorder');
+        if ($update) {
+            $data['success'] = true;
+        }
+        else{
+            $data['message'] = 'Update Status Pesanan Gagal';
+        }
+        echo json_encode($data);
+    }
+    function review()
+    {
+        $data = array('success' => false ,'message'=>array());
+
+        $postorderid = $this->input->post('postorderid');
+        $userid_ = $this->input->post('userid_');
+        $rating = $this->input->post('rating');
+        $descrev = $this->input->post('descrev');
+
+        $dataInsert = array(
+            'userid'    => $userid_,
+            'postid'    => $postorderid,
+            'starpoint' => $rating,
+            'comment'   => $descrev,
+        );
+
+        $ExecInsert = $this->ModelsExecuteMaster->ExecInsert($dataInsert,'review');
+
+        if ($ExecInsert) {
+            $data['success'] = true;
+        }
+        else{
+            $data['message'] = 'Gagal Menambahkan review silahkan hubungi Customer Service kami';
+        }
+        echo json_encode($data);
+    }
 }
