@@ -685,28 +685,16 @@ $(function () {
       var canvas = document.createElement('canvas');
       var MAX_WIDTH = width1;
       var MAX_HEIGHT = height1;
-      // var width = img.width;
-      // var height = img.height;
+      var width = img.width;
+      var height = img.height;
 
-      // if (width > height) {
-      //   if (width > MAX_WIDTH) {
-      //     height *= MAX_WIDTH / width;
-      //     width = MAX_WIDTH;
-      //   }
-      //   else{
-      //     // height = MAX_HEIGHT;
-      //     // width = MAX_WIDTH;
-      //   }
-      // } else {
-      //   if (height > MAX_HEIGHT) {
-      //     width *= MAX_HEIGHT / height;
-      //     height = MAX_HEIGHT;
-      //   }
-      //   else{
-      //     // width = MAX_WIDTH;
-      //     // height = MAX_HEIGHT;
-      //   }
-      // }
+      if (width > height) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+      } else {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+      }
 
       canvas.width = MAX_WIDTH;
       canvas.height = MAX_HEIGHT;

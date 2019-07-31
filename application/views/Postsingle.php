@@ -1,7 +1,10 @@
 <?php
   require_once(APPPATH."views/part/Header.php");
+  $uriSegments = explode("/", parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+  $lastUriSegment = array_pop($uriSegments);
 ?>
     <!-- product category -->
+    <input type="hidden" name="idpost_uri" id="idpost_uri" value="<?php echo $lastUriSegment; ?>">
   <section id="aa-product-details">
     <div class="container">
       <div class="row">
@@ -11,26 +14,23 @@
               <div class="row">
                 <!-- Modal view slider -->
                 <?php
-                  // foreach ($image as $img) {
-                  //   echo '
-                  //     <div class="col-md-5 col-sm-5 col-xs-12">
-                  //       <div class="aa-product-view-slider">
-                  //         <div id="demo-1" class="simpleLens-gallery-container">
-
-                  //         </div>
-                  //       </div>
-                  //     </div>
-                  //   ';
-                  // }
+                $image = $this->ModelsExecuteMaster->FindData(array('postid'=>$lastUriSegment),'imagetable');
+                  foreach ($image->result() as $img) {
+                    $img = $img->image; // Your data 'data:image/png;base64,AAAFBfj42Pj4';
+                    $img = str_replace('data:image/png;base64,', '', $img);
+                    $img = str_replace(' ', '+', $img);
+                    $data = base64_decode($img);
+                    file_put_contents('../public/img_post', $data);
+                  }
                 ?> 
                 <div class="col-md-5 col-sm-5 col-xs-12">
                   <div class="aa-product-view-slider">
                     <div id="demo-1" class="simpleLens-gallery-container">
                       <div class="simpleLens-container">
-                        <div class="simpleLens-big-image-container"><a data-lens-image="img/view-slider/large/polo-shirt-1.png" class="simpleLens-lens-image"><img src="img/view-slider/medium/polo-shirt-1.png" class="simpleLens-big-image"></a></div>
+                        <div class="simpleLens-big-image-container"><a data-lens-image="Assets/img/view-slider/large/polo-shirt-1.png" class="simpleLens-lens-image"><img src="img/view-slider/medium/polo-shirt-1.png" class="simpleLens-big-image"></a></div>
                       </div>
                       <div class="simpleLens-thumbnails-container">
-                          <a data-big-image="img/view-slider/medium/polo-shirt-1.png" data-lens-image="img/view-slider/large/polo-shirt-1.png" class="simpleLens-thumbnail-wrapper" href="#">
+                          <a data-big-image="Assets/img/view-slider/medium/polo-shirt-1.png" data-lens-image="img/view-slider/large/polo-shirt-1.png" class="simpleLens-thumbnail-wrapper" href="#">
                             <img src="img/view-slider/thumbnail/polo-shirt-1.png">
                           </a>                                    
                           <a data-big-image="img/view-slider/medium/polo-shirt-3.png" data-lens-image="img/view-slider/large/polo-shirt-3.png" class="simpleLens-thumbnail-wrapper" href="#">
@@ -197,3 +197,53 @@
   require_once(APPPATH."views/part/Footer.php");
   require_once(APPPATH."views/part/Script.php");
 ?>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+
+  });
+  function ResizeImage(image,width_,height_) {
+      var filesToUpload = image;
+      var file = filesToUpload[0];
+
+      // Create an image
+      var img = document.createElement("img");
+      // Create a file reader
+      var reader = new FileReader();
+      // Set the image once loaded into file reader
+      reader.onload = function(e) {
+              img.src = e.target.result;
+
+              var canvas = document.createElement("canvas");
+              //var canvas = $("<canvas>", {"id":"testing"})[0];
+              var ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0);
+
+              var MAX_WIDTH = 400;
+              var MAX_HEIGHT = 400;
+              var width = img.width;
+              var height = img.height;
+
+              if (width > height) {
+                  if (width > MAX_WIDTH) {
+                      height *= MAX_WIDTH / width;
+                      width = MAX_WIDTH;
+                  }
+              } else {
+                  if (height > MAX_HEIGHT) {
+                      width *= MAX_HEIGHT / height;
+                      height = MAX_HEIGHT;
+                  }
+              }
+              canvas.width = width;
+              canvas.height = height;
+              var ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, width, height);
+
+              var dataurl = canvas.toDataURL("image/png");
+              document.getElementById('output').src = dataurl;
+          }
+          // Load files into file reader
+      reader.readAsDataURL(file);
+  }
+</script>
