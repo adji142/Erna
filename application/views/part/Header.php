@@ -246,7 +246,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <!-- <link rel="stylesheet" href="<?php base_url();?>/Assets/css/customtab/css/style.css"> -->
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   </head>
   <body> 
    <!-- wpf loader Two -->

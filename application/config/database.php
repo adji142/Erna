@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',//'koprasiwanitausahamandiri.com',
-	'username' => 'root',//'u6018530_root',
-	'password' => 'lagis3nt0s4',//'admin123',//hsp123 lagis3nt0s4
-	'database' => 'ernashop',//'u6018530_ErnaShop',
+	'hostname' => 'koprasiwanitausahamandiri.com',
+	'username' => 'u6018530_root',
+	'password' => 'admin123',//hsp123 lagis3nt0s4
+	'database' => 'u6018530_ErnaShop',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
